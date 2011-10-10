@@ -4,5 +4,5 @@ import org.bukkit.block.Block;
 
 public interface IPatternInstanceFactory
 {
-	public BasePatternInstance Create(Block[] blocks);
+	public BasePatternInstance Create(Block[][] blocks);
 }

@@ -14,7 +14,7 @@ public class FuelRodPattern extends BasePattern implements IPatternInstanceFacto
 			});
 	}
 	
-	public BasePatternInstance Create(Block[] blocks)
+	public BasePatternInstance Create(Block[][] blocks)
 	{
 		return new Instance();
 	}

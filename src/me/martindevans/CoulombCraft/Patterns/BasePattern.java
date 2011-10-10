@@ -47,26 +47,36 @@ public abstract class BasePattern implements IPatternInstanceFactory
 	    return ret;
 	}
 	
-	public Block[] Match(Block b)
-	{
-		throw new Error();
-	}
-	
 	/**
-	 * Return true if the given block is surrounded by the correct blocks to form this pattern
+	 * Return the blocks which form this pattern involving the given block or null if no such pattern exists
 	 * @param b
 	 * @return
 	 */
-	public boolean Matches(Block b)
+	public Block[][] Match(Block b)
 	{
-		return
-			Matches(pattern0, b) ||
-			Matches(pattern90, b) ||
-			Matches(pattern180, b) ||
-			Matches(pattern270, b);
+		Block[][] result;
+		
+		result = Matches(pattern0, b);
+		if (result != null)
+			return result;
+		
+		result = Matches(pattern90, b);
+		if (result != null)
+			return result;
+		
+		result = Matches(pattern180, b);
+		if (result != null)
+			return result;
+		
+		result = Matches(pattern270, b);
+		if (result != null)
+			return result;
+		
+		return null;
 	}
+
 	
-	private boolean Matches(int[][] pattern, Block b)
+	private Block[][] Matches(int[][] pattern, Block b)
 	{
 		int type = b.getTypeId();
 		Location blockLocation = b.getLocation();
@@ -79,17 +89,20 @@ public abstract class BasePattern implements IPatternInstanceFactory
 				{					
 					Location matchLocation = blockLocation.clone().add(-i, 0, -j);
 					
-					if (MatchAtLocation(pattern, matchLocation))
-						return true;
+					Block[][] result = MatchAtLocation(pattern, matchLocation);
+					if (result != null)
+						return result;
 				}
 			}	
 		}
 		
-		return false;
+		return null;
 	}
 	
-	private boolean MatchAtLocation(int[][] pattern, Location location)
+	private Block[][] MatchAtLocation(int[][] pattern, Location location)
 	{
+		Block[][] result = new Block[size][size];
+		
 		World w = location.getWorld();
 		
 		for	(int i = 0; i < size; i++)
@@ -99,15 +112,15 @@ public abstract class BasePattern implements IPatternInstanceFactory
 				if (pattern[i][j] == -1)
 					continue;
 				
-				int blockType = w.getBlockTypeIdAt(location.getBlockX() + i, location.getBlockY(), location.getBlockZ() + j);
+				result[i][j] = w.getBlockAt(location.getBlockX() + i, location.getBlockY(), location.getBlockZ() + j);
 				
-				if (blockType != pattern[i][j])
+				if (result[i][j].getTypeId() != pattern[i][j])
 				{
-					return false;
+					return null;
 				}
 			}
 		}
 		
-		return true;
+		return result;
 	}
 }

@@ -48,7 +48,7 @@ public class PatternMatcher
 	{
 		for (PatternFactoryTuple p : potentials)
 		{
-			Block[] blocks = p.getPattern().Match(b);
+			Block[][] blocks = p.getPattern().Match(b);
 			if (blocks != null)
 				return new FoundPattern(blocks, p.getFactory());
 			else
@@ -121,10 +121,10 @@ public class PatternMatcher
 	
 	private class FoundPattern
 	{
-		private final Block[] blocks;
+		private final Block[][] blocks;
 		private IPatternInstanceFactory factory;
 
-		public Block[] getBlocks() {
+		public Block[][] getBlocks() {
 			return blocks;
 		}
 		
@@ -133,7 +133,7 @@ public class PatternMatcher
 			return factory;
 		}
 		
-		public FoundPattern(Block[] blocks, IPatternInstanceFactory factory)
+		public FoundPattern(Block[][] blocks, IPatternInstanceFactory factory)
 		{
 			this.blocks = blocks;
 			this.factory = factory;
