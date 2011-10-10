@@ -33,6 +33,7 @@ public class CoulombCraft extends JavaPlugin
 		 pluginManager = this.getServer().getPluginManager();
 		 LoadPatterns();
 		 RegisterListeners();
+		 RegisterUpdaters();
 		 
 		 logger.info("CoulombCraft has been loaded");
 	}
@@ -53,10 +54,21 @@ public class CoulombCraft extends JavaPlugin
 		pluginManager.registerEvent(Event.Type.REDSTONE_CHANGE, new CoulombRedstoneListener(), Event.Priority.Normal, this);
 	}
 	
+	private void RegisterUpdaters()
+	{
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() { public void run() { Tick(); }}, 0, 20);
+	}
+	
+	private void Tick()
+	{
+		
+	}
+	
 	public void onDisable()
 	{ 
 		//disable stuff
 		
 		logger.info("CoulombCraft has been unloaded");
 	}
+
 }

@@ -4,7 +4,6 @@ import me.martindevans.CoulombCraft.CoulombCraft;
 import me.martindevans.CoulombCraft.Patterns.BasePatternInstance;
 import me.martindevans.CoulombCraft.Patterns.PatternMatcher;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockListener;
@@ -23,12 +22,10 @@ public class PatternMatchBlockListener extends BlockListener
 	{		
         Player player = event.getPlayer();
         Block block = event.getBlock();
-        Material mat = block.getType();
 
-        player.sendMessage("You placed a block with ID : " + mat + " @ " + block.getLocation().getBlockX() + "," + block.getLocation().getBlockZ());
-        
         BasePatternInstance instance = matcher.Match(block);
         
-        player.sendMessage((instance == null) ? "pattern is null" : "Pattern is " + instance.getClass());
+        if (instance != null)
+        	player.sendMessage("Created " + instance.getClass().getName());
 	}
 }
