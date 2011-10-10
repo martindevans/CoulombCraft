@@ -47,6 +47,11 @@ public abstract class BasePattern implements IPatternInstanceFactory
 	    return ret;
 	}
 	
+	public Block[] Match(Block b)
+	{
+		throw new Error();
+	}
+	
 	/**
 	 * Return true if the given block is surrounded by the correct blocks to form this pattern
 	 * @param b

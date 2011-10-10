@@ -30,12 +30,12 @@ public class PatternMatcher
 		if (potentialPatterns == null)
 			return null;
 		
-		PatternFactoryTuple result = FindPatternAround(b, potentialPatterns);
+		FoundPattern result = FindPatternAround(b, potentialPatterns);
 		
 		if (result == null)
 			return null;
 		
-		return result.getFactory().Create();
+		return result.getFactory().Create(result.getBlocks());
 	}
 	
 	/**
@@ -44,12 +44,15 @@ public class PatternMatcher
 	 * @param potentials
 	 * @return
 	 */
-	private PatternFactoryTuple FindPatternAround(Block b, List<PatternFactoryTuple> potentials)
+	private FoundPattern FindPatternAround(Block b, List<PatternFactoryTuple> potentials)
 	{
 		for (PatternFactoryTuple p : potentials)
 		{
-			if (p.getPattern().Matches(b))
-				return p;
+			Block[] blocks = p.getPattern().Match(b);
+			if (blocks != null)
+				return new FoundPattern(blocks, p.getFactory());
+			else
+				return null;
 		}
 		
 		return null;
@@ -113,6 +116,27 @@ public class PatternMatcher
 		public IPatternInstanceFactory getFactory()
 		{
 			return factory;
+		}
+	}
+	
+	private class FoundPattern
+	{
+		private final Block[] blocks;
+		private IPatternInstanceFactory factory;
+
+		public Block[] getBlocks() {
+			return blocks;
+		}
+		
+		public IPatternInstanceFactory getFactory()
+		{
+			return factory;
+		}
+		
+		public FoundPattern(Block[] blocks, IPatternInstanceFactory factory)
+		{
+			this.blocks = blocks;
+			this.factory = factory;
 		}
 	}
 }
