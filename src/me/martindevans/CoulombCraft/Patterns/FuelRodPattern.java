@@ -6,7 +6,7 @@ public class FuelRodPattern extends BasePattern implements IPatternInstanceFacto
 	{
 		super(new int[][]
 			{
-				{ -1, 20, -1 },
+				{ -1, 20, 12 },
 				{ 20, 12, 20 },
 				{ -1, 20, -1 }
 			});
