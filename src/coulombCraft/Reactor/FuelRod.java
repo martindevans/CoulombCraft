@@ -75,7 +75,8 @@ public class FuelRod extends BasePatternInstance
 		
 		UpdateNearbyBlocks();
 		
-		heat += heatDelta + heatProduction;
+		heatProduction += heatDelta;
+		heat += heatProduction;
 		heat = Math.max(0, heat);
 		
 		heatDelta = 0;
@@ -138,7 +139,9 @@ public class FuelRod extends BasePatternInstance
 						case 35:	//wool
 						{
 							//temp code to change colour
-							b.setData(TemperatureColourMap.GetColour(heat, getHeatCapacity()));
+							byte colour = TemperatureColourMap.GetColour(heat, getHeatCapacity());
+							if (b.getData() != colour)
+								b.setData(colour);
 							
 							if (meltingDown)
 								CoulombCraft.Ignite(b);
@@ -238,12 +241,30 @@ public class FuelRod extends BasePatternInstance
 	@Override
 	public boolean IsBreakable(Block b)
 	{
-		return heat < getHeatCapacity() * getDestructionTemperatureThreshold();
+		boolean breakable = heat < getHeatCapacity() * getDestructionTemperatureThreshold();
+		
+		return breakable;
 	}
 	
 	@Override
 	protected void OnPatternDestroyed()
 	{
-		coreLocation.getWorld().getPlayers().get(0).sendMessage("DESTROYED FUEL ROD");
+	}
+
+	public Double Query(String variable)
+	{
+		if (variable.equalsIgnoreCase("temperature"))
+			return heat;
+		else if (variable.equalsIgnoreCase("heat production"))
+			return heatProduction;
+		else
+			return null;
+	}
+	
+	@Override
+	public boolean CanAnswer(String variable)
+	{
+		return variable.equalsIgnoreCase("temperature") ||
+			   variable.equalsIgnoreCase("heat production");
 	}
 }

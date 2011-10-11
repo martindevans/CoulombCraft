@@ -18,4 +18,18 @@ public class Integer3
 	{
 		return x ^ y << 3 ^ z >> 7;
 	}
+	
+	public boolean equals(Object o)
+	{
+		if (o.getClass().equals(this.getClass()))
+		{
+			Integer3 i = (Integer3)o;
+			
+			return i.x == x &&
+				i.y == y &&
+				i.z == z;
+		}
+		else
+			return false;
+	}
 }

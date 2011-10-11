@@ -53,3 +53,7 @@ Heat:
 	
 	#Wool/cable ignition threshold
 	Cable Ignition Chance: 0.01
+	
+Core:
+	#Ticks between sign updates
+	Sign Update Ticks: 20

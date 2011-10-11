@@ -13,6 +13,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
+import coulombCraft.Signs.QueryProvider;
+
 public class CoulombCraft extends JavaPlugin
 {	
 	private static Logger logger;
@@ -21,6 +23,7 @@ public class CoulombCraft extends JavaPlugin
 	private PatternMatcher patterns;
 	private Configuration config;
 	private PositionalBlockBreakListener positionalBreakListener;
+	private QueryProvider queryProvider;
 	
 	public PatternMatcher getPatternMatcher() {
 		return patterns;
@@ -34,6 +37,11 @@ public class CoulombCraft extends JavaPlugin
 	public Configuration getConfiguration()
 	{
 		return config;
+	}
+	
+	public QueryProvider getQueryProvider()
+	{
+		return queryProvider;
 	}
 	
 	public PositionalBlockBreakListener getPositionalBreakListener()
@@ -50,6 +58,8 @@ public class CoulombCraft extends JavaPlugin
 		 
 		 config = super.getConfiguration();
 		 LoadConfig();
+		 
+		 queryProvider = new QueryProvider(this);
 		 
 		 LoadPatterns();
 		 RegisterListeners();

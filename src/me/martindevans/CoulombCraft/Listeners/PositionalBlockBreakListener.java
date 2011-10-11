@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import me.martindevans.CoulombCraft.Integer3;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.Cancellable;
@@ -14,7 +16,7 @@ import org.bukkit.event.block.BlockListener;
 
 public class PositionalBlockBreakListener extends BlockListener
 {
-	HashMap<Integer, HashMap<Integer, HashMap<Integer, ArrayList<IBreakListener>>>> listeners = new HashMap<Integer, HashMap<Integer, HashMap<Integer, ArrayList<IBreakListener>>>>();
+	HashMap<Integer3, ArrayList<IBreakListener>> listeners = new HashMap<Integer3, ArrayList<IBreakListener>>();
 	
 	@Override
 	public void onBlockBreak(BlockBreakEvent event)
@@ -67,7 +69,7 @@ public class PositionalBlockBreakListener extends BlockListener
 	private void OnBreak(List<IBreakListener> listeners,  Block b)
 	{		
 		for (IBreakListener li : listeners)
-		{
+		{			
 			li.OnBreak(b);
 		}
 	}
@@ -79,40 +81,33 @@ public class PositionalBlockBreakListener extends BlockListener
 	
 	public void unregisterListener(IBreakListener listener, int x, int y, int z)
 	{
-		//This leaks memory because empty lists and maps need to be cleaned up here
-		GetList(x, y, z, false).remove(listener);
+		ArrayList<IBreakListener> list = GetList(x, y, z, false);
+		if (list != null)
+		{
+			list.remove(listener);
+			
+			if (list.size() == 0)
+			{
+				listeners.remove(new Integer3(x, y, z));
+			}
+		}
 	}
 	
 	private ArrayList<IBreakListener> GetList(int x, int y, int z, boolean create)
 	{
-		HashMap<Integer, HashMap<Integer, ArrayList<IBreakListener>>> map1 = listeners.get(x);
-		if (map1 == null)
+		Integer3 pos = new Integer3(x, y, z);
+		ArrayList<IBreakListener> l = listeners.get(pos);
+		
+		if (l == null)
 		{
 			if (!create)
 				return null;
-			map1 = new HashMap<Integer, HashMap<Integer, ArrayList<IBreakListener>>>();
-			listeners.put(x, map1);
+			
+			l = new ArrayList<IBreakListener>();
+			listeners.put(pos, l);
 		}
 		
-		HashMap<Integer, ArrayList<IBreakListener>> map2 = map1.get(y);
-		if (map2 == null)
-		{
-			if (!create)
-				return null;
-			map2 = new HashMap<Integer, ArrayList<IBreakListener>>();
-			map1.put(y, map2);
-		}
-		
-		ArrayList<IBreakListener> list = map2.get(z);
-		if (list == null)
-		{
-			if (!create)
-				return null;
-			list = new ArrayList<IBreakListener>();
-			map2.put(z, list);
-		}
-		
-		return list;
+		return l;
 	}
 
 }
