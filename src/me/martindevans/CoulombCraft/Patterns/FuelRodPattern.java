@@ -1,30 +1,30 @@
 package me.martindevans.CoulombCraft.Patterns;
 
+import me.martindevans.CoulombCraft.CoulombCraft;
+
 import org.bukkit.block.Block;
+
+import coulombCraft.Reactor.FuelRod;
 
 public class FuelRodPattern extends BasePattern implements IPatternInstanceFactory
 {
-	public FuelRodPattern()
+	CoulombCraft plugin;
+	
+	public FuelRodPattern(CoulombCraft plugin)
 	{
 		super(new int[][]
 			{
 				{ -1, 20, -1 },
-				{ 20, 12, 20 },
+				{ 20, 57, 20 },
 				{ -1, 20, -1 }
 			});
+		
+		this.plugin = plugin;
 	}
 	
 	public BasePatternInstance Create(Block[][] blocks)
 	{
-		return new Instance();
-	}
-	
-	public class Instance extends BasePatternInstance
-	{
-		@Override
-		public String toString()
-		{
-			return "Fuel Rod";
-		}
+		FuelRod r = new FuelRod(plugin, blocks);		
+		return r;
 	}
 }

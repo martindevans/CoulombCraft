@@ -1,0 +1,52 @@
+Fuel Rod:
+	#Base heat production per second of a fuel
+	Base Heat Production: 1
+	
+	#The maximum heat capacity of a fuel rod before it melts down
+	Heat Capacity: 200
+	
+	#The heat before a meltdown destroys the fuel rod with lava
+	Meltdown Heat Capacity: 1000
+	
+	#The amount of heat removed by a block of water near to a core
+	Water Heat Reduction: 0.5
+	
+	#Amount a nearby lava source increases reactor temperature
+	Lava Source Bonus: 0.1
+	
+	#Amount a nearby lava source increases reactor temperature
+	Fire Source Bonus: 0.1
+	
+	#Amount a water block reduces the temperature of a rod
+	Water Heat Reduction: 0.8
+	
+	#Chance of melting glass during a meltdown (per tick)
+	Glass Melt Chance: 0.05
+	
+	#Multiplier a block of iron applies to heat production
+	Iron Damp Multiplier: 0.6
+	
+	#Multiplier a block of sand applies to heat production
+	Sand Damp Multiplier: 0.75
+	
+	#The percentage of heat in the reactor a piece of ice can take
+	Ice Cooling Percentage: 0.05
+	
+Heat:
+	#The range over which heat spreads and water has a cooling affect
+	Range: 4
+	
+	#The heat value above which wood is ignited
+	Wood Ignition Threshold: 3
+	
+	#The chance per tick wood above the threshold will set on fire
+	Wood Ignition Chance: 0.1
+	
+	#The temperature required to evaporate water
+	Water Evaporation Threshold: 5
+	
+	#Wool/cable ignition threshold
+	Cable Ignition Threshold: 15
+	
+	#Wool/cable ignition threshold
+	Cable Ignition Chance: 0.01
