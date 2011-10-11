@@ -1,5 +1,6 @@
 package coulombCraft.Reactor;
 
+import java.text.DecimalFormat;
 import java.util.Random;
 
 import org.bukkit.Effect;
@@ -251,12 +252,14 @@ public class FuelRod extends BasePatternInstance
 	{
 	}
 
-	public Double Query(String variable)
+	DecimalFormat sigfig4 = new DecimalFormat("0.000");
+	DecimalFormat sigfig2 = new DecimalFormat("0.0");
+	public String Query(String variable)
 	{
 		if (variable.equalsIgnoreCase("temperature"))
-			return heat;
+			return sigfig2.format(heat);
 		else if (variable.equalsIgnoreCase("heat production"))
-			return heatProduction;
+			return sigfig4.format(heatProduction);
 		else
 			return null;
 	}

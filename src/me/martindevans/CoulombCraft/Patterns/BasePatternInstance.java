@@ -110,7 +110,7 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 	}
 
 	@Override
-	public Double Query(String queryString)
+	public String Query(String queryString)
 	{
 		return null;
 	}

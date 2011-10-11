@@ -11,7 +11,7 @@ public interface IQueryable
 	 * @param queryString The question being asked
 	 * @return A value, or null if no answer can be found
 	 */
-	public Double Query(String variable);
+	public String Query(String variable);
 	
 	/**
 	 * Gets a value indicating if this queryable understands the given query

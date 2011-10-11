@@ -16,9 +16,11 @@ public class SignFactory
 		
 		boolean success = false;
 		if (operation.equalsIgnoreCase("display"))
-		{
 			success = CreateDisplay(input, b, p, plugin);
-		}
+		else if (operation.equalsIgnoreCase("<"))
+			success = CreateLessThanOperator(input, b, p, plugin);
+		else if (operation.equalsIgnoreCase("<"))
+			success = CreateGreaterThanOperator(input, b, p, plugin);
 		
 		if (!success)
 		{
@@ -27,6 +29,7 @@ public class SignFactory
 			s.setLine(1, "");
 			s.setLine(2, "");
 			s.setLine(3, "");
+			s.update();
 		}
 	}
 	
@@ -52,9 +55,9 @@ public class SignFactory
 			public void run()
 			{
 				Sign sign = (Sign)b.getState();
-				Double value = queryable.Query(variable);
+				String value = queryable.Query(variable);
 				
-				sign.setLine(3, "" + Math.round(value));
+				sign.setLine(3, value);
 				sign.update();
 			}
 		});
@@ -62,5 +65,15 @@ public class SignFactory
 		task.AssociateTaskId(taskId);
 
 		return true;
+	}
+
+	private static boolean CreateLessThanOperator(String[] input, final Block b, Player p, final CoulombCraft plugin)
+	{
+		
+	}
+	
+	private static boolean CreateGreaterThanOperator(String[] input, final Block b, Player p, final CoulombCraft plugin)
+	{
+		
 	}
 }
