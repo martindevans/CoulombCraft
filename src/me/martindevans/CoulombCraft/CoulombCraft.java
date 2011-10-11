@@ -78,6 +78,9 @@ public class CoulombCraft extends JavaPlugin
 		pluginManager.registerEvent(Event.Type.BLOCK_BURN, positionalBreakListener, Event.Priority.Normal, this);
 		pluginManager.registerEvent(Event.Type.BLOCK_FADE, positionalBreakListener, Event.Priority.Normal, this);
 		
+		SignPlaceListener signPlaceListener = new SignPlaceListener(this);
+		pluginManager.registerEvent(Event.Type.SIGN_CHANGE, signPlaceListener, Event.Priority.Normal, this);
+		
 		pluginManager.registerEvent(Event.Type.REDSTONE_CHANGE, new CoulombRedstoneListener(), Event.Priority.Normal, this);
 	}
 	
