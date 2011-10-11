@@ -80,4 +80,10 @@ public abstract class BasePatternInstance implements IBreakListener, ITick
 	}
 	
 	protected abstract void OnPatternDestroyed();
+
+	@Override
+	public boolean IsBreakable(Block b)
+	{
+		return true;
+	}
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockFadeEvent;
@@ -18,37 +19,56 @@ public class PositionalBlockBreakListener extends BlockListener
 	@Override
 	public void onBlockBreak(BlockBreakEvent event)
 	{
-		Block b = event.getBlock();
-		Location l = b.getLocation();
-		
-		OnBreak(b, l);
+		HandleEvent(event, event.getBlock());
 	}
 	
 	public void onBlockBurn(BlockBurnEvent event)
 	{
-		Block b = event.getBlock();
-		Location l = b.getLocation();
-		
-		OnBreak(b, l);
+		HandleEvent(event, event.getBlock());
 	}
 	
 	public void onBlockFade(BlockFadeEvent event)
 	{
-		Block b = event.getBlock();
-		Location l = b.getLocation();
-		
-		OnBreak(b, l);
+		HandleEvent(event, event.getBlock());
 	}
 	
-	private void OnBreak(Block b, Location l)
+	private void HandleEvent(Cancellable event, Block b)
 	{
+		if (event.isCancelled())
+			return;
+		
+		Location l = b.getLocation();
+		
 		List<IBreakListener> correctlyPositionedListeners = GetList(l.getBlockX(), l.getBlockY(), l.getBlockZ(), false);
-		if (correctlyPositionedListeners != null)
+		
+		if (correctlyPositionedListeners == null)
+			return;
+		
+		if (CheckBreakable(correctlyPositionedListeners, b))
+			OnBreak(correctlyPositionedListeners, b);
+		else
 		{
-			for (IBreakListener li : correctlyPositionedListeners)
-			{
-				li.OnBreak(b);
-			}
+			event.setCancelled(true);
+		}
+	}
+	
+	private boolean CheckBreakable(List<IBreakListener> listeners, Block b)
+	{
+		boolean breakable = true;
+		
+		for (IBreakListener li : listeners)
+		{
+			breakable &= li.IsBreakable(b);
+		}
+		
+		return breakable;
+	}
+	
+	private void OnBreak(List<IBreakListener> listeners,  Block b)
+	{		
+		for (IBreakListener li : listeners)
+		{
+			li.OnBreak(b);
 		}
 	}
 	

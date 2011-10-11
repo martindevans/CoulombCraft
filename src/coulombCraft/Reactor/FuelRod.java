@@ -63,6 +63,11 @@ public class FuelRod extends BasePatternInstance
 		return config.getInt("Heat.Range", 4);
 	}
 	
+	private double getDestructionTemperatureThreshold()
+	{
+		return config.getDouble("Fuel Rod.Allow Destruction Temperature Threshold", 0.25);
+	}
+	
 	@Override
 	public void Tick()
 	{
@@ -169,14 +174,14 @@ public class FuelRod extends BasePatternInstance
 						}
 						case 51:	//Fire
 						{
-							heatDelta += config.getDouble("Fuel Rod.Fire Source Bonus", 0.1);
+							heatDelta += config.getDouble("Fuel Rod.Fire Source Bonus", 5);
 							continue;
 						}
 						case 10:	//Lava (flowing)
 						case 11:	//Lava (still)
 						{
 							//Increase core temperature
-							heatDelta += config.getDouble("Fuel Rod.Lava Source Bonus", 0.1);
+							heatProduction *= config.getDouble("Fuel Rod.Lava Source Bonus", 1.5);
 							continue;
 						}
 						case 12:	//Sand
@@ -228,6 +233,12 @@ public class FuelRod extends BasePatternInstance
 		//turn it into water
 		if (randNumber > 1 / heat)
 			b.setType(Material.WATER);
+	}
+	
+	@Override
+	public boolean IsBreakable(Block b)
+	{
+		return heat < getHeatCapacity() * getDestructionTemperatureThreshold();
 	}
 	
 	@Override

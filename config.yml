@@ -11,11 +11,11 @@ Fuel Rod:
 	#The amount of heat removed by a block of water near to a core
 	Water Heat Reduction: 0.5
 	
-	#Amount a nearby lava source increases reactor temperature
-	Lava Source Bonus: 0.1
+	#Amount a nearby lava source increases reactor temperature production
+	Lava Source Bonus: 1.1
 	
-	#Amount a nearby lava source increases reactor temperature
-	Fire Source Bonus: 0.1
+	#Amount a nearby fire source increases reactor temperature
+	Fire Source Bonus: 5
 	
 	#Amount a water block reduces the temperature of a rod
 	Water Heat Reduction: 0.8
@@ -31,6 +31,9 @@ Fuel Rod:
 	
 	#The percentage of heat in the reactor a piece of ice can take
 	Ice Cooling Percentage: 0.05
+	
+	#The percentage of Heat capacity below which the rod is breakable
+	Allow Destruction Temperature Threshold: 0.25
 	
 Heat:
 	#The range over which heat spreads and water has a cooling affect
