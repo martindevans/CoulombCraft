@@ -27,7 +27,7 @@ Fuel Rod:
 	Sand Damp Multiplier: 0.75
 	
 	#The percentage of heat in the reactor a piece of ice can take
-	Ice Cooling Percentage: 0.05
+	Ice Heat Reduction: 10
 	
 	#The percentage of Heat capacity below which the rod is breakable
 	Allow Destruction Temperature Threshold: 0.25
@@ -56,6 +56,9 @@ Heat:
 	
 	#The chance per tick glass above the threshold will smash
 	Glass Break Chance: 0.1
+	
+	#The temperature above which ice melts
+	Ice Melt Threshold: 50
 
 Mining Rig:
 	#The number of ticks between mining head movements

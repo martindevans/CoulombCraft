@@ -46,7 +46,7 @@ public class FuelRod extends BasePatternInstance
 
 	private double getHeatCapacity()
 	{
-		return config.getDouble("Fuel Rod.Heat Capacity", 200);
+		return config.getDouble("Fuel Rod.Heat Capacity", 1000);
 	}
 	
 	private double getHeatProduction()
@@ -214,17 +214,16 @@ public class FuelRod extends BasePatternInstance
 	{
 		double randNumber = rand.nextDouble();
 		
-		double reduction = config.getDouble("Fuel Rod.Ice Cooling Percentage", 0.05);
-		heatDelta -= config.getDouble("Fuel Rod.Ice Heat Reduction", reduction);
+		heatDelta -= config.getDouble("Fuel Rod.Ice Heat Reduction", 10);
 		
 		//turn it into water
-		if (randNumber > 1 / heat)
+		if (randNumber > 1 / heat && heat > config.getDouble("Heat.Ice Melt Threshold", 50));
 			b.setType(Material.WATER);
 	}
 	
 	private void SmashGlass(World w, Block b, int x, int y, int z)
 	{
-		if (heat > config.getDouble("Heat.Glass Break Threshold", 150) && rand.nextDouble() <= config.getDouble("Heat.Glass Break Chance", 0.01))
+		if (heat > config.getDouble("Heat.Glass Break Threshold", 950) && rand.nextDouble() <= config.getDouble("Heat.Glass Break Chance", 0.01))
 		{
 			b.setType(Material.AIR);
 		}
@@ -232,7 +231,7 @@ public class FuelRod extends BasePatternInstance
 	
 	private void IgniteWool(World w, Block b, int x, int y, int z)
 	{
-		if (heat > config.getDouble("Heat.Cable Ignition Threshold", 140) && rand.nextDouble() <= config.getDouble("Heat.Cable Ignition Chance", 0.1))
+		if (heat > config.getDouble("Heat.Cable Ignition Threshold", 900) && rand.nextDouble() <= config.getDouble("Heat.Cable Ignition Chance", 0.1))
 		{
 			CoulombCraft.Ignite(b);
 		}
