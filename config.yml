@@ -5,9 +5,6 @@ Fuel Rod:
 	#The maximum heat capacity of a fuel rod before it melts down
 	Heat Capacity: 200
 	
-	#The heat before a meltdown destroys the fuel rod with lava
-	Meltdown Heat Capacity: 1000
-	
 	#The amount of heat removed by a block of water near to a core
 	Water Heat Reduction: 0.5
 	
@@ -15,13 +12,13 @@ Fuel Rod:
 	Lava Source Bonus: 1.1
 	
 	#Amount a nearby fire source increases reactor temperature
-	Fire Source Bonus: 5
+	Fire Source Bonus: 1
 	
 	#Amount a water block reduces the temperature of a rod
 	Water Heat Reduction: 0.8
 	
 	#Chance of melting glass during a meltdown (per tick)
-	Glass Melt Chance: 0.05
+	Glass Melt Chance: 0.005
 	
 	#Multiplier a block of iron applies to heat production
 	Iron Damp Multiplier: 0.6
@@ -40,16 +37,30 @@ Heat:
 	Range: 4
 	
 	#The heat value above which wood is ignited
-	Wood Ignition Threshold: 3
+	Wood Ignition Threshold: 5
 	
 	#The chance per tick wood above the threshold will set on fire
 	Wood Ignition Chance: 0.1
 	
 	#The temperature required to evaporate water
-	Water Evaporation Threshold: 5
+	Water Evaporation Threshold: 10
 	
 	#Wool/cable ignition threshold
-	Cable Ignition Threshold: 15
+	Cable Ignition Threshold: 140
 	
 	#Wool/cable ignition threshold
 	Cable Ignition Chance: 0.01
+	
+	#Temperature above which glass smashes
+	Glass Break Threshold: 150
+	
+	#The chance per tick glass above the threshold will smash
+	Glass Break Chance: 0.1
+
+Mining Rig:
+	#The number of ticks between mining head movements
+	Move Ticks: 1
+
+Core:
+	#Ticks between sign updates
+	Sign Update Ticks: 20

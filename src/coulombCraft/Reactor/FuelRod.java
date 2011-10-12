@@ -1,5 +1,6 @@
 package coulombCraft.Reactor;
 
+import java.text.DecimalFormat;
 import java.util.Random;
 
 import org.bukkit.Effect;
@@ -48,11 +49,6 @@ public class FuelRod extends BasePatternInstance
 		return config.getDouble("Fuel Rod.Heat Capacity", 200);
 	}
 	
-	private double getMeltdownCapacity()
-	{
-		return config.getDouble("Fuel Rod.Meltdown Heat Capacity", 1000);
-	}
-	
 	private double getHeatProduction()
 	{
 		return config.getDouble("Fuel Rod.Base Heat Production", 1);
@@ -75,6 +71,8 @@ public class FuelRod extends BasePatternInstance
 		
 		UpdateNearbyBlocks();
 		
+		heatProduction += heatDelta;
+		heat += heatProduction;
 		heat += heatDelta + heatProduction;
 		heat = Math.max(0, heat);
 		
@@ -82,33 +80,16 @@ public class FuelRod extends BasePatternInstance
 		
 		if (heat > getHeatCapacity())
 		{
-			//meltdown
 			meltingDown = true;
-			
-			if (rand.nextDouble() < 0.1)
+			for (int i = 0; i < blocks.length; i++)
 			{
-				for (int i = 0; i < blocks.length; i++)
+				for (int j = 0; j < blocks[i].length; j++)
 				{
-					for (int j = 0; j < blocks[i].length; j++)
-					{
-						CoulombCraft.Ignite(blocks[i][j]);
-					}
+					if (blocks[i][j] != null)
+						blocks[i][j].setType(Material.LAVA);
 				}
 			}
-			
-			if (heat >= getMeltdownCapacity())
-			{
-				for (int i = 0; i < blocks.length; i++)
-				{
-					for (int j = 0; j < blocks[i].length; j++)
-					{
-						if (blocks[i][j] != null)
-							blocks[i][j].setType(Material.LAVA);
-					}
-				}
-				
-				DestroyPattern();
-			}
+			DestroyPattern();
 		}
 		
 		super.Tick();
@@ -140,10 +121,15 @@ public class FuelRod extends BasePatternInstance
 							//temp code to change colour
 							b.setData(TemperatureColourMap.GetColour(heat, getHeatCapacity()));
 							
-							if (meltingDown)
-								CoulombCraft.Ignite(b);
+							IgniteWool(world, b, i, j, k);
 							
 							//TODO: Increase temperature of wool
+							continue;
+						}
+						case 20:	//Glass
+						case 102:	//Glass Pane
+						{
+							SmashGlass(world, b, i, j, k);
 							continue;
 						}
 						case 17:	//Wood
@@ -174,7 +160,7 @@ public class FuelRod extends BasePatternInstance
 						}
 						case 51:	//Fire
 						{
-							heatDelta += config.getDouble("Fuel Rod.Fire Source Bonus", 5);
+							heatDelta += config.getDouble("Fuel Rod.Fire Source Bonus", 1);
 							continue;
 						}
 						case 10:	//Lava (flowing)
@@ -235,6 +221,22 @@ public class FuelRod extends BasePatternInstance
 			b.setType(Material.WATER);
 	}
 	
+	private void SmashGlass(World w, Block b, int x, int y, int z)
+	{
+		if (heat > config.getDouble("Heat.Glass Break Threshold", 150) && rand.nextDouble() <= config.getDouble("Heat.Glass Break Chance", 0.01))
+		{
+			b.setType(Material.AIR);
+		}
+	}
+	
+	private void IgniteWool(World w, Block b, int x, int y, int z)
+	{
+		if (heat > config.getDouble("Heat.Cable Ignition Threshold", 140) && rand.nextDouble() <= config.getDouble("Heat.Cable Ignition Chance", 0.1))
+		{
+			CoulombCraft.Ignite(b);
+		}
+	}
+	
 	@Override
 	public boolean IsBreakable(Block b)
 	{
@@ -245,5 +247,26 @@ public class FuelRod extends BasePatternInstance
 	protected void OnPatternDestroyed()
 	{
 		coreLocation.getWorld().getPlayers().get(0).sendMessage("DESTROYED FUEL ROD");
+	}
+
+	DecimalFormat sigfig4 = new DecimalFormat("0.000");
+	DecimalFormat sigfig2 = new DecimalFormat("0.0");
+	public String Query(String variable)
+	{
+		if (variable.equalsIgnoreCase("temperature"))
+			return sigfig2.format(heat);
+		else if (variable.equalsIgnoreCase("heat production"))
+			return sigfig4.format(heatProduction);
+		else if (variable.equalsIgnoreCase("heat capacity"))
+			return sigfig2.format(getHeatCapacity());
+			return null;
+	}
+	
+	@Override
+	public boolean CanAnswer(String variable)
+	{
+		return variable.equalsIgnoreCase("temperature") ||
+			   variable.equalsIgnoreCase("heat production") ||
+			   variable.equalsIgnoreCase("heat capacity");
 	}
 }
