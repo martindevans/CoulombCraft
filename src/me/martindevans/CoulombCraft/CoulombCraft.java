@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import me.martindevans.CoulombCraft.Listeners.*;
 import me.martindevans.CoulombCraft.Patterns.FuelRodPattern;
+import me.martindevans.CoulombCraft.Patterns.MiningRigPattern;
 import me.martindevans.CoulombCraft.Patterns.PatternMatcher;
 
 import org.bukkit.block.Block;
@@ -77,6 +78,7 @@ public class CoulombCraft extends JavaPlugin
 		patterns = new PatternMatcher();
 		
 		patterns.AddPattern(new FuelRodPattern(this));
+		patterns.AddPattern(new MiningRigPattern(this));
 	}
 	
 	private void RegisterListeners()

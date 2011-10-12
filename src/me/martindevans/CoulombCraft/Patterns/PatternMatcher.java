@@ -51,8 +51,6 @@ public class PatternMatcher
 			Block[][] blocks = p.getPattern().Match(b);
 			if (blocks != null)
 				return new FoundPattern(blocks, p.getFactory());
-			else
-				return null;
 		}
 		
 		return null;

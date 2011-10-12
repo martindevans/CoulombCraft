@@ -22,6 +22,8 @@ public class SignPlaceListener extends BlockListener
 	
 	public void onSignChange(SignChangeEvent event)
 	{
+		event.getPlayer().sendMessage("Sign Change");
+		
 		final Block b = event.getBlock();
 		final Player p = event.getPlayer();
 		Material type = b.getType();
@@ -31,7 +33,7 @@ public class SignPlaceListener extends BlockListener
 			final Sign s = ((Sign)b.getState());
 			
 			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-			{
+			{				
 				public void run()
 				{
 					if (s.getLine(0).equalsIgnoreCase("[coulomb]"))
