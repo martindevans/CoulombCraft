@@ -11,7 +11,7 @@ import me.martindevans.CoulombCraft.Utility;
 public class SignFactory
 {
 	public static void MakeSignFromStrings(String[] input, Block b, Player p, CoulombCraft plugin)
-	{
+	{		
 		if (!input[0].equalsIgnoreCase("[coulomb]"))
 			return;
 		
