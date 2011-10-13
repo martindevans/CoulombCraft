@@ -13,6 +13,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
+import coulombCraft.Freezer.FreezerPattern;
 import coulombCraft.Signs.QueryProvider;
 
 public class CoulombCraft extends JavaPlugin
@@ -77,6 +78,7 @@ public class CoulombCraft extends JavaPlugin
 		patterns = new PatternMatcher();
 		
 		patterns.AddPattern(new FuelRodPattern(this));
+		patterns.AddPattern(new FreezerPattern(this));
 	}
 	
 	private void RegisterListeners()
