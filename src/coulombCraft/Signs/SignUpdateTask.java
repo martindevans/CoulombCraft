@@ -29,8 +29,8 @@ public class SignUpdateTask implements Runnable
 		Material mat = block.getType();
 		if (mat != Material.SIGN && mat != Material.SIGN_POST && mat != Material.WALL_SIGN)
 			scheduler.cancelTask(taskId);
-		
-		updateTask.run();
+		else
+			updateTask.run();
 	}
 	
 }
