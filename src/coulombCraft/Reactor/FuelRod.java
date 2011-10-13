@@ -223,7 +223,7 @@ public class FuelRod extends BasePatternInstance
 	
 	private void SmashGlass(World w, Block b, int x, int y, int z)
 	{
-		if (heat > config.getDouble("Heat.Glass Break Threshold", 950) && rand.nextDouble() <= config.getDouble("Heat.Glass Break Chance", 0.01))
+		if (heat > config.getDouble("Heat.Glass Break Threshold", 850) && rand.nextDouble() <= config.getDouble("Heat.Glass Break Chance", 0.01))
 		{
 			b.setType(Material.AIR);
 		}

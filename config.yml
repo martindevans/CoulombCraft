@@ -46,13 +46,13 @@ Heat:
 	Water Evaporation Threshold: 10
 	
 	#Wool/cable ignition threshold
-	Cable Ignition Threshold: 140
+	Cable Ignition Threshold: 900
 	
 	#Wool/cable ignition threshold
 	Cable Ignition Chance: 0.01
 	
 	#Temperature above which glass smashes
-	Glass Break Threshold: 150
+	Glass Break Threshold: 850
 	
 	#The chance per tick glass above the threshold will smash
 	Glass Break Chance: 0.1
