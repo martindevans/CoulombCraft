@@ -22,8 +22,6 @@ public class SignPlaceListener extends BlockListener
 	
 	public void onSignChange(SignChangeEvent event)
 	{
-		event.getPlayer().sendMessage("Sign Change");
-		
 		final Block b = event.getBlock();
 		final Player p = event.getPlayer();
 		Material type = b.getType();

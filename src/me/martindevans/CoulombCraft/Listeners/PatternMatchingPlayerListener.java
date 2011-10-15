@@ -22,14 +22,10 @@ public class PatternMatchingPlayerListener extends PlayerListener
 	@Override
 	public void onPlayerBucketEmpty(final PlayerBucketEmptyEvent event)
 	{
-		plugin.getServer().broadcastMessage("Bucket placed");
-		
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
 		{				
 			public void run()
 			{
-				plugin.getServer().broadcastMessage("Delayed action");
-				
 				Block blockCreated = event.getBlockClicked().getRelative(event.getBlockFace());
 				
 				BasePatternInstance instance = matcher.Match(blockCreated);
