@@ -6,16 +6,16 @@ import org.bukkit.block.Block;
 
 import coulombCraft.Reactor.FuelRod;
 
-public class FuelRodPattern extends BasePattern implements IPatternInstanceFactory
+public class FuelRodPattern2 extends BasePattern implements IPatternInstanceFactory
 {
 	CoulombCraft plugin;
 	
-	public FuelRodPattern(CoulombCraft plugin)
+	public FuelRodPattern2(CoulombCraft plugin)
 	{
 		super(new int[][]
 			{
 				{ -1, 20, -1 },
-				{ 20, 10, 20 },
+				{ 20, 11, 20 },
 				{ -1, 20, -1 }
 			});
 		

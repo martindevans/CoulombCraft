@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import me.martindevans.CoulombCraft.Listeners.*;
 import me.martindevans.CoulombCraft.Patterns.FuelRodPattern;
+import me.martindevans.CoulombCraft.Patterns.FuelRodPattern2;
 import me.martindevans.CoulombCraft.Patterns.MiningRigPattern;
 import me.martindevans.CoulombCraft.Patterns.PatternMatcher;
 
@@ -79,6 +80,7 @@ public class CoulombCraft extends JavaPlugin
 		patterns = new PatternMatcher();
 		
 		patterns.AddPattern(new FuelRodPattern(this));
+		patterns.AddPattern(new FuelRodPattern2(this));
 		patterns.AddPattern(new MiningRigPattern(this));
 		patterns.AddPattern(new FreezerPattern(this));
 	}
@@ -86,6 +88,7 @@ public class CoulombCraft extends JavaPlugin
 	private void RegisterListeners()
 	{
 		pluginManager.registerEvent(Event.Type.BLOCK_PLACE, new PatternMatchBlockListener(this), Event.Priority.Normal, this);
+		pluginManager.registerEvent(Event.Type.PLAYER_BUCKET_EMPTY, new PatternMatchingPlayerListener(this), Event.Priority.Normal, this);
 		
 		positionalBreakListener = new PositionalBlockBreakListener();
 		pluginManager.registerEvent(Event.Type.BLOCK_BREAK, positionalBreakListener, Event.Priority.Normal, this);
