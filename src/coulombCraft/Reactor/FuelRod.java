@@ -77,6 +77,11 @@ public class FuelRod extends BasePatternInstance
 		
 		heatDelta = 0;
 		
+		if (blocks[1][1].getType() != Material.LAVA)
+		{
+			blocks[1][1].setType(Material.LAVA);
+		}
+		
 		if (heat > getHeatCapacity())
 		{
 			meltingDown = true;
@@ -226,6 +231,15 @@ public class FuelRod extends BasePatternInstance
 		if (heat > config.getDouble("Heat.Glass Break Threshold", 850) && rand.nextDouble() <= config.getDouble("Heat.Glass Break Chance", 0.01))
 		{
 			b.setType(Material.AIR);
+			
+			for (int i = 0; i < blocks.length; i++)
+			{
+				for (int j = 0; j < blocks[i].length; j++)
+				{
+					if (blocks[i][j].equals(b))
+						super.DestroyPattern();
+				}
+			}
 		}
 	}
 	
