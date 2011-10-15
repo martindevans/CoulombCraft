@@ -20,9 +20,6 @@ Fuel Rod:
 	#Amount a water block reduces the temperature of a rod
 	Water Heat Reduction: 0.8
 	
-	#Chance of melting glass during a meltdown (per tick)
-	Glass Melt Chance: 0.005
-	
 	#Multiplier a block of iron applies to heat production
 	Iron Damp Multiplier: 0.6
 	
@@ -40,32 +37,32 @@ Heat:
 	Range: 4
 	
 	#The heat value above which wood is ignited
-	Wood Ignition Threshold: 5
+	Wood Ignition Threshold: 250
 	
 	#The chance per tick wood above the threshold will set on fire
 	Wood Ignition Chance: 0.1
 	
 	#The temperature required to evaporate water
-	Water Evaporation Threshold: 10
+	Water Evaporation Threshold: 100
 	
 	#Wool/cable ignition threshold
 	Cable Ignition Threshold: 900
 	
 	#Wool/cable ignition threshold
 	Cable Ignition Chance: 0.01
-
-Mining Rig:
-	#The number of ticks between mining head movements
-	Move Ticks: 1
-
+	
 	#Temperature above which glass smashes
 	Glass Break Threshold: 850
 	
 	#The chance per tick glass above the threshold will smash
 	Glass Break Chance: 0.1
-	
+
 	#The temperature above which ice melts
 	Ice Melt Threshold: 50
+
+Mining Rig:
+	#The number of ticks between mining head movements
+	Move Ticks: 1
 
 Mining Rig:
 	#The number of ticks between mining head movements
