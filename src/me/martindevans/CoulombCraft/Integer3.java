@@ -1,5 +1,7 @@
 package me.martindevans.CoulombCraft;
 
+import org.bukkit.Location;
+
 public class Integer3
 {
 	int x;
@@ -13,6 +15,11 @@ public class Integer3
 		this.z = z;
 	}
 	
+	public Integer3(Location location)
+	{
+		this(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+	}
+
 	@Override
 	public int hashCode()
 	{

@@ -1,4 +1,4 @@
 name: CoulombCraft
 main: me.martindevans.CoulombCraft.CoulombCraft
 version: 0.1
-depend: [Spout]
+depend: [Spout, MOCDBLib]

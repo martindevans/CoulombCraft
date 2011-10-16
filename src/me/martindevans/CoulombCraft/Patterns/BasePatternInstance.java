@@ -83,6 +83,8 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 					}
 				}
 			}
+			
+			OnPatternDestroyed();
 		}
 	}
 
@@ -97,7 +99,6 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 		if (patternIntact)
 		{
 			patternIntact = false;
-			OnPatternDestroyed();
 		}
 	}
 	
@@ -106,7 +107,7 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 	@Override
 	public boolean IsBreakable(Block b)
 	{
-		return true;
+		return patternIntact;
 	}
 
 	@Override

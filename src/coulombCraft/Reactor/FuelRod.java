@@ -9,19 +9,19 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.config.Configuration;
+import org.getspout.spoutapi.SpoutManager;
 
 import me.martindevans.CoulombCraft.CoulombCraft;
+import me.martindevans.CoulombCraft.Integer3;
 import me.martindevans.CoulombCraft.TemperatureColourMap;
 import me.martindevans.CoulombCraft.Patterns.BasePatternInstance;
 
 public class FuelRod extends BasePatternInstance
 {	
-	double heat;
+	FuelRodData data;
+	
 	double heatDelta;
-	
 	double heatProduction;
-	
-	boolean meltingDown = false;
 	
 	Configuration config;
 	
@@ -72,8 +72,7 @@ public class FuelRod extends BasePatternInstance
 		UpdateNearbyBlocks();
 		
 		heatProduction += heatDelta;
-		heat += heatProduction;
-		heat = Math.max(0, heat);
+		data.setHeat((float)Math.max(0, data.getHeat() + heatProduction));
 		
 		heatDelta = 0;
 		
@@ -82,9 +81,9 @@ public class FuelRod extends BasePatternInstance
 			blocks[1][1].setType(Material.LAVA);
 		}
 		
-		if (heat > getHeatCapacity())
+		if (data.getHeat() > getHeatCapacity())
 		{
-			meltingDown = true;
+			data.setIsMeltingDown(true);
 			for (int i = 0; i < blocks.length; i++)
 			{
 				for (int j = 0; j < blocks[i].length; j++)
@@ -123,7 +122,7 @@ public class FuelRod extends BasePatternInstance
 						case 35:	//wool
 						{
 							//temp code to change colour
-							byte colour = TemperatureColourMap.GetColour(heat, getHeatCapacity());
+							byte colour = TemperatureColourMap.GetColour(data.getHeat(), getHeatCapacity());
 							if (b.getData() != colour)
 								b.setData(colour);
 							
@@ -194,7 +193,7 @@ public class FuelRod extends BasePatternInstance
 	
 	private void IgniteWood(World w, Block b, int x, int y, int z)
 	{
-		if (heat > config.getDouble("Heat.Wood Ignition Threshold", 3) && rand.nextDouble() <= config.getDouble("Heat.Wood Ignition Chance", 0.1))
+		if (data.getHeat() > config.getDouble("Heat.Wood Ignition Threshold", 3) && rand.nextDouble() <= config.getDouble("Heat.Wood Ignition Chance", 0.1))
 		{
 			CoulombCraft.Ignite(b);
 		}
@@ -202,13 +201,13 @@ public class FuelRod extends BasePatternInstance
 	
 	private void ApplyWaterCooling(World w, Block b, int x, int y, int z)
 	{
-		double chance = Math.pow(heat / getHeatCapacity(), 4);
+		double chance = Math.pow(data.getHeat() / getHeatCapacity(), 4);
 		double randNumber = rand.nextDouble();
 		if (randNumber < chance)
 		{
 			heatDelta -= config.getDouble("Fuel Rod.Water Heat Reduction", 0.8);
 			
-			if (heat > config.getDouble("Heat.Water Evaporation Threshold", 5))
+			if (data.getHeat() > config.getDouble("Heat.Water Evaporation Threshold", 5))
 				b.setTypeId(0);
 			
 			w.playEffect(b.getLocation(), Effect.EXTINGUISH, 0);
@@ -222,13 +221,13 @@ public class FuelRod extends BasePatternInstance
 		heatDelta -= config.getDouble("Fuel Rod.Ice Heat Reduction", 10);
 		
 		//turn it into water
-		if (randNumber > 1 / heat && heat > config.getDouble("Heat.Ice Melt Threshold", 50));
+		if (randNumber > 1 / data.getHeat() && data.getHeat() > config.getDouble("Heat.Ice Melt Threshold", 50));
 			b.setType(Material.WATER);
 	}
 	
 	private void SmashGlass(World w, Block b, int x, int y, int z)
 	{
-		if (heat > config.getDouble("Heat.Glass Break Threshold", 850) && rand.nextDouble() <= config.getDouble("Heat.Glass Break Chance", 0.01))
+		if (data.getHeat() > config.getDouble("Heat.Glass Break Threshold", 850) && rand.nextDouble() <= config.getDouble("Heat.Glass Break Chance", 0.01))
 		{
 			b.setType(Material.AIR);
 			
@@ -236,7 +235,7 @@ public class FuelRod extends BasePatternInstance
 			{
 				for (int j = 0; j < blocks[i].length; j++)
 				{
-					if (blocks[i][j].equals(b))
+					if (b.equals(blocks[i][j]))
 						super.DestroyPattern();
 				}
 			}
@@ -245,7 +244,7 @@ public class FuelRod extends BasePatternInstance
 	
 	private void IgniteWool(World w, Block b, int x, int y, int z)
 	{
-		if (heat > config.getDouble("Heat.Cable Ignition Threshold", 900) && rand.nextDouble() <= config.getDouble("Heat.Cable Ignition Chance", 0.1))
+		if (data.getHeat() > config.getDouble("Heat.Cable Ignition Threshold", 900) && rand.nextDouble() <= config.getDouble("Heat.Cable Ignition Chance", 0.1))
 		{
 			CoulombCraft.Ignite(b);
 		}
@@ -254,14 +253,13 @@ public class FuelRod extends BasePatternInstance
 	@Override
 	public boolean IsBreakable(Block b)
 	{
-		boolean breakable = heat < getHeatCapacity() * getDestructionTemperatureThreshold();
-		
-		return breakable;
+		return super.IsBreakable(b) && data.getHeat() < getHeatCapacity() * getDestructionTemperatureThreshold();
 	}
 	
 	@Override
 	protected void OnPatternDestroyed()
 	{
+		data = null;
 	}
 
 	DecimalFormat sigfig4 = new DecimalFormat("0.000");
@@ -269,7 +267,7 @@ public class FuelRod extends BasePatternInstance
 	public String Query(String variable)
 	{
 		if (variable.equalsIgnoreCase("temperature"))
-			return sigfig2.format(heat);
+			return sigfig2.format(data.getHeat());
 		else if (variable.equalsIgnoreCase("heat production"))
 			return sigfig4.format(heatProduction);
 		else if (variable.equalsIgnoreCase("heat capacity"))
