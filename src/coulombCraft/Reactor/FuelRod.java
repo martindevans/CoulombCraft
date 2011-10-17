@@ -9,10 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.config.Configuration;
-import org.getspout.spoutapi.SpoutManager;
-
 import me.martindevans.CoulombCraft.CoulombCraft;
-import me.martindevans.CoulombCraft.Integer3;
 import me.martindevans.CoulombCraft.TemperatureColourMap;
 import me.martindevans.CoulombCraft.Patterns.BasePatternInstance;
 
@@ -36,6 +33,9 @@ public class FuelRod extends BasePatternInstance
 		this.config = plugin.getConfiguration();
 		
 		coreLocation = blocks[1][1].getLocation();
+		
+		data = new FuelRodData(coreLocation, plugin);
+		plugin.getSqliteDatabase().AddDatabaseListener(data);
 	}
 	
 	@Override
@@ -110,6 +110,7 @@ public class FuelRod extends BasePatternInstance
 				for (int k = coreLocation.getBlockZ() - range; k < coreLocation.getBlockZ() + range + 1; k++)
 				{
 					Block b = world.getBlockAt(i, j, k);
+					b.getChunk().load();
 					int type = b.getTypeId();
 					
 					if (type == Material.AIR.getId())
@@ -259,7 +260,7 @@ public class FuelRod extends BasePatternInstance
 	@Override
 	protected void OnPatternDestroyed()
 	{
-		data = null;
+		data.Destroy();
 	}
 
 	DecimalFormat sigfig4 = new DecimalFormat("0.000");

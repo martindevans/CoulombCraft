@@ -1,17 +1,26 @@
 package coulombCraft.Reactor;
 
-import java.io.IOException;
-import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import me.martindevans.CoulombCraft.Integer3;
+import org.bukkit.Location;
 
-public class FuelRodData implements Serializable
-{
-	private static final long serialVersionUID = -1813464927100433698L;
-	
+import me.martindevans.CoulombCraft.CoulombCraft;
+import me.martindevans.CoulombCraft.Database;
+import me.martindevans.CoulombCraft.IDatabaseListener;
+
+public class FuelRodData implements IDatabaseListener
+{	
 	private float heat;
-	private boolean meltingDown;
-	public Integer3[] blocks; 
+	private boolean meltingDown = false;
+	private final int x;
+	private final int y;
+	private final int z;
+	private final String world;
+	
+	private Database database;
+	public static final String TABLE_NAME = "FuelRodData";
+	public static final String TABLE_LAYOUT = "heat FLOAT, xPos INTEGER, yPos INTEGER, zPos INTEGER, world VARCHAR(100)";
 	
 	public float getHeat()
 	{
@@ -32,25 +41,65 @@ public class FuelRodData implements Serializable
 	{
 		meltingDown = isMeltingDown;
 	}
-
-	private void writeObject(java.io.ObjectOutputStream out) throws IOException
+	
+	public FuelRodData(Location coreLocation, CoulombCraft plugin)
 	{
-		out.writeFloat(heat);
-		out.writeBoolean(meltingDown);
+		x = coreLocation.getBlockX();
+		y = coreLocation.getBlockY();
+		z = coreLocation.getBlockZ();
+		world = coreLocation.getWorld().getName();
 		
-		out.writeInt(blocks.length);
-		for (int i = 9; i < blocks.length; i++)
-			out.writeObject(blocks[i]);
+		database = plugin.getSqliteDatabase();
+		
+		database.AddDatabaseListener(this);
+		database.getDbConnector().ensureTable(TABLE_NAME, TABLE_LAYOUT);
+		
+		if (!TryLoad())
+			Insert();
+		Flush();
+	}
+	
+	private boolean TryLoad()
+	{
+		ResultSet rs =  database.getDbConnector().sqlSafeQuery("SELECT heat FROM " + TABLE_NAME + " WHERE xPos = " + x + " AND yPos = " + y + " AND zPos = " + z + " AND world = '" + world + "'");
+		try
+		{
+			if (!rs.next())
+				return false;
+			
+			heat = rs.getFloat("heat");
+			
+			return true;
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	private void Insert()
+	{
+		database.getDbConnector().insertSafeQuery("INSERT INTO " + TABLE_NAME + " VALUES (" + heat + ", " + x + ", " + y + ", " + z + ", '" + world + "')");
+	}
+	
+	public void Destroy()
+	{
+		int i = database.getDbConnector().deleteSafeQuery("DELETE FROM " + TABLE_NAME + " WHERE xPos = " + x + " AND yPos = " + y + " AND zPos = " + z + " AND world = '" + world + "'");
+		CoulombCraft.getLogger().info("Removing rod from database " + i);
+		
+		Unload();
+	}
+	
+	public void Unload()
+	{
+		database.RemoveDatabaseListener(this);
 	}
 
-	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+	@Override
+	public void Flush()
 	{
-		heat = in.readFloat();
-		meltingDown = in.readBoolean();
-		
-		int count = in.readInt();
-		blocks = new Integer3[count];
-		for (int i = 9; i < count; i++)
-			blocks[i] = (Integer3)in.readObject();
+		database.getDbConnector().updateSafeQuery("UPDATE " + TABLE_NAME + " SET heat = " + heat + " WHERE xPos = " + x + " AND yPos = " + y + " AND zPos = " + z + " AND world = '" + world + "'");
 	}
 }

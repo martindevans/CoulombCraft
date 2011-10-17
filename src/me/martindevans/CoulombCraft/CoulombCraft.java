@@ -8,9 +8,6 @@ import me.martindevans.CoulombCraft.Patterns.FuelRodPattern;
 import me.martindevans.CoulombCraft.Patterns.FuelRodPattern2;
 import me.martindevans.CoulombCraft.Patterns.MiningRigPattern;
 import me.martindevans.CoulombCraft.Patterns.PatternMatcher;
-import moc.MOCDBLib.DBConnector;
-import moc.MOCDBLib.MOCDBLib;
-
 import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
@@ -18,7 +15,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
 import coulombCraft.Freezer.FreezerPattern;
-import coulombCraft.Reactor.FuelRodDeserializer;
 import coulombCraft.Signs.QueryProvider;
 
 public class CoulombCraft extends JavaPlugin
@@ -30,10 +26,7 @@ public class CoulombCraft extends JavaPlugin
 	private Configuration config;
 	private PositionalBlockBreakListener positionalBreakListener;
 	private QueryProvider queryProvider;
-	private DeserializerChunkListener deserializer;
-	
-	private MOCDBLib db;
-	private DBConnector dbConnector;
+	private Database database;
 	
 	public PatternMatcher getPatternMatcher()
 	{
@@ -60,6 +53,11 @@ public class CoulombCraft extends JavaPlugin
 		return positionalBreakListener;
 	}
 	
+	public Database getSqliteDatabase()
+	{
+		return database;
+	}
+	
 	public void onEnable()
 	{
 		logger = Logger.getLogger("Minecraft");
@@ -71,34 +69,24 @@ public class CoulombCraft extends JavaPlugin
 		 LoadConfig();
 		 
 		 queryProvider = new QueryProvider(this);
-		 deserializer = new DeserializerChunkListener(this);
 		 
 		 LoadPatterns();
 		 RegisterListeners();
 		 RegisterUpdaters();
-		 RegisterDeserializers();
 		 
 		 LoadDatabase();
+		 LoadStoredPatterns();
 		 
 		 logger.info("CoulombCraft has been loaded");
 	}
 	 
 	private void LoadDatabase()
 	{
-		PluginManager pm = this.getServer().getPluginManager();
-		db = (MOCDBLib)pm.getPlugin("MOCDBLib");
-		setDbConnector(db.getMineCraftDB("CoulombCraft", getLogger()));
-		
-		getDbConnector().ensureTable("Important_Blocks","world varchar(100), x Integer, y Integer, z Integer");
+		database = new Database(this);
 	}
 	
 	private void LoadConfig()
 	{
-	}
-	
-	private void RegisterDeserializers()
-	{
-		deserializer.AddNewDeserializer(new FuelRodDeserializer());
 	}
 	
 	private void LoadPatterns()
@@ -111,6 +99,11 @@ public class CoulombCraft extends JavaPlugin
 		patterns.AddPattern(new FreezerPattern(this));
 	}
 	
+	private void LoadStoredPatterns()
+	{
+		FuelRodPattern2.LoadAllFromDatabase(this);
+	}
+	
 	private void RegisterListeners()
 	{
 		pluginManager.registerEvent(Event.Type.BLOCK_PLACE, new PatternMatchBlockListener(this), Event.Priority.Normal, this);
@@ -120,8 +113,6 @@ public class CoulombCraft extends JavaPlugin
 		pluginManager.registerEvent(Event.Type.BLOCK_BREAK, positionalBreakListener, Event.Priority.Normal, this);
 		pluginManager.registerEvent(Event.Type.BLOCK_BURN, positionalBreakListener, Event.Priority.Normal, this);
 		pluginManager.registerEvent(Event.Type.BLOCK_FADE, positionalBreakListener, Event.Priority.Normal, this);
-		
-		pluginManager.registerEvent(Event.Type.CHUNK_LOAD, deserializer, Event.Priority.Normal, this);
 		
 		SignPlaceListener signPlaceListener = new SignPlaceListener(this);
 		pluginManager.registerEvent(Event.Type.SIGN_CHANGE, signPlaceListener, Event.Priority.Normal, this);
@@ -156,6 +147,8 @@ public class CoulombCraft extends JavaPlugin
 	public void onDisable()
 	{ 
 		//disable stuff
+		database.FlushDatabase();
+		database.CloseDatabase();
 		
 		logger.info("CoulombCraft has been unloaded");
 	}
@@ -188,15 +181,5 @@ public class CoulombCraft extends JavaPlugin
 		Block backwards = b.getRelative(0, 0, -1);
 		if (backwards.getTypeId() == 0)	//air
 			backwards.setTypeId(51);	//fire
-	}
-
-	public DBConnector getDbConnector()
-	{
-		return dbConnector;
-	}
-
-	public void setDbConnector(DBConnector dbConnector)
-	{
-		this.dbConnector = dbConnector;
 	}
 }

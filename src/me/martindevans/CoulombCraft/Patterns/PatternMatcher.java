@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import me.martindevans.CoulombCraft.CoulombCraft;
-
 import org.bukkit.block.Block;
 
 /**
@@ -68,8 +66,6 @@ public class PatternMatcher
 	 */
 	public void AddPattern(BasePattern pattern, IPatternInstanceFactory factory)
 	{
-		CoulombCraft.getLogger().info("CoulombCraft adding pattern " + pattern);
-		
 		PatternFactoryTuple tuple = new PatternFactoryTuple(pattern, factory);
 		
 		//Add all blocks used in this pattern into the interesting blocks collection
