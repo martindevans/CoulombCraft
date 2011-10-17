@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
 import coulombCraft.Freezer.FreezerPattern;
+import coulombCraft.Recipes.StoneToWool;
 import coulombCraft.Signs.QueryProvider;
 
 public class CoulombCraft extends JavaPlugin
@@ -77,9 +78,16 @@ public class CoulombCraft extends JavaPlugin
 		 LoadDatabase();
 		 LoadStoredPatterns();
 		 
+		 LoadRecipes();
+		 
 		 logger.info("CoulombCraft has been loaded");
 	}
 	 
+	private void LoadRecipes()
+	{
+		super.getServer().addRecipe(new StoneToWool());
+	}
+	
 	private void LoadDatabase()
 	{
 		database = new Database(this);

@@ -1,6 +1,8 @@
 package coulombCraft.Reactor;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Effect;
@@ -26,6 +28,8 @@ public class FuelRod extends BasePatternInstance
 	
 	Location coreLocation;
 	
+	Block[] blocksInRange;
+	
 	public FuelRod(CoulombCraft plugin, Block[][] blocks)
 	{
 		super(plugin, blocks);
@@ -36,6 +40,28 @@ public class FuelRod extends BasePatternInstance
 		
 		data = new FuelRodData(coreLocation, plugin);
 		plugin.getSqliteDatabase().AddDatabaseListener(data);
+		
+		blocksInRange = FindBlocksInRange(coreLocation.getWorld(), getHeatRange());
+	}
+	
+	private Block[] FindBlocksInRange(World w, int range)
+	{
+		List<Block> blocks = new ArrayList<Block>();
+		
+		for (int i = coreLocation.getBlockX() - range; i < coreLocation.getBlockX() + range + 1; i++)
+		{
+			for (int j = coreLocation.getBlockY() - range; j < coreLocation.getBlockY() + range + 1; j++)
+			{
+				for (int k = coreLocation.getBlockZ() - range; k < coreLocation.getBlockZ() + range + 1; k++)
+				{
+					Block b = w.getBlockAt(i, j, k);
+					
+					blocks.add(b);
+				}
+			}
+		}
+		
+		return blocks.toArray(new Block[0]);
 	}
 	
 	@Override
@@ -103,96 +129,90 @@ public class FuelRod extends BasePatternInstance
 		World world = coreLocation.getWorld();
 		int range = getHeatRange();
 		
-		for (int i = coreLocation.getBlockX() - range; i < coreLocation.getBlockX() + range + 1; i++)
+		for (int i = 0; i < blocksInRange.length; i++)
 		{
-			for (int j = coreLocation.getBlockY() - range; j < coreLocation.getBlockY() + range + 1; j++)
+			Block b = blocksInRange[i];
+			b.getChunk().load();
+			int type = b.getTypeId();
+			
+			if (type == Material.AIR.getId())
+				continue;
+			
+			switch (type)
 			{
-				for (int k = coreLocation.getBlockZ() - range; k < coreLocation.getBlockZ() + range + 1; k++)
+				case 0:		//air
+					continue;
+				case 35:	//wool
 				{
-					Block b = world.getBlockAt(i, j, k);
-					b.getChunk().load();
-					int type = b.getTypeId();
+					//temp code to change colour
+					byte colour = TemperatureColourMap.GetColour(data.getHeat(), getHeatCapacity());
+					if (b.getData() != colour)
+						b.setData(colour);
 					
-					if (type == Material.AIR.getId())
+					IgniteWool(world, b);
+					
+					//TODO: Increase temperature of wool
+					continue;
+				}
+				case 20:	//Glass
+				case 102:	//Glass Pane
+				{
+					SmashGlass(world, b);
+					continue;
+				}
+				case 17:	//Wood
+				case 5:		//Logs
+				case 18:	//Leaves
+				case 87:	//Netherrack
+				{
+					IgniteWood(world, b);
+					continue;
+				}
+				case 8:		//water (flowing)
+				{
+					if (b.getY() != coreLocation.getBlockY())
 						continue;
-					
-					switch (type)
-					{
-						case 0:		//air
-							continue;
-						case 35:	//wool
-						{
-							//temp code to change colour
-							byte colour = TemperatureColourMap.GetColour(data.getHeat(), getHeatCapacity());
-							if (b.getData() != colour)
-								b.setData(colour);
-							
-							IgniteWool(world, b, i, j, k);
-							
-							//TODO: Increase temperature of wool
-							continue;
-						}
-						case 20:	//Glass
-						case 102:	//Glass Pane
-						{
-							SmashGlass(world, b, i, j, k);
-							continue;
-						}
-						case 17:	//Wood
-						case 5:		//Logs
-						case 18:	//Leaves
-						case 87:	//Netherrack
-						{
-							IgniteWood(world, b, i, j, k);
-							continue;
-						}
-						case 8:		//water (flowing)
-						{
-							if (j != coreLocation.getBlockY())
-								continue;
-							ApplyWaterCooling(world, b, i, j, k);
-							continue;
-						}
-						case 9:		//water (still)
-						{
-							ApplyWaterCooling(world, b, i, j, k);
-							continue;
-						}
-						case 79:	//Ice
-						case 80:	//Snow block
-						{
-							ApplyColdBlockCooling(world, b, i, j, k);
-							continue;
-						}
-						case 51:	//Fire
-						{
-							heatDelta += config.getDouble("Fuel Rod.Fire Source Bonus", 1);
-							continue;
-						}
-						case 10:	//Lava (flowing)
-						case 11:	//Lava (still)
-						{
-							//Increase core temperature
-							heatProduction *= config.getDouble("Fuel Rod.Lava Source Bonus", 1.5);
-							continue;
-						}
-						case 12:	//Sand
-						{
-							heatProduction *= config.getDouble("Fuel Rod.Sand Damp Multiplier", 0.75);
-							continue;
-						}
-						case 42:	//Iron block
-						{
-							heatProduction *= config.getDouble("Fuel Rod.Iron Damp Multiplier", 0.6);
-							continue;
-						}
-					}
+					ApplyWaterCooling(world, b);
+					continue;
+				}
+				case 9:		//water (still)
+				{
+					ApplyWaterCooling(world, b);
+					continue;
+				}
+				case 79:	//Ice
+				case 80:	//Snow block
+				{
+					ApplyColdBlockCooling(world, b);
+					continue;
+				}
+				case 51:	//Fire
+				{
+					heatDelta += config.getDouble("Fuel Rod.Fire Source Bonus", 1);
+					continue;
+				}
+				case 10:	//Lava (flowing)
+				case 11:	//Lava (still)
+				{
+					//Increase core temperature
+					heatProduction *= config.getDouble("Fuel Rod.Lava Source Bonus", 1.5);
+					continue;
+				}
+				case 12:	//Sand
+				{
+					heatProduction *= config.getDouble("Fuel Rod.Sand Damp Multiplier", 0.75);
+					continue;
+				}
+				case 42:	//Iron block
+				{
+					heatProduction *= config.getDouble("Fuel Rod.Iron Damp Multiplier", 0.6);
+					continue;
 				}
 			}
 		}
 	}
 	
-	private void IgniteWood(World w, Block b, int x, int y, int z)
+	private void IgniteWood(World w, Block b)
 	{
 		if (data.getHeat() > config.getDouble("Heat.Wood Ignition Threshold", 3) && rand.nextDouble() <= config.getDouble("Heat.Wood Ignition Chance", 0.1))
 		{
@@ -200,22 +220,22 @@ public class FuelRod extends BasePatternInstance
 		}
 	}
 	
-	private void ApplyWaterCooling(World w, Block b, int x, int y, int z)
+	private void ApplyWaterCooling(World w, Block b)
 	{
-		double chance = Math.pow(data.getHeat() / getHeatCapacity(), 4);
+		double chance = Math.pow(data.getHeat() / getHeatCapacity(), 6);
 		double randNumber = rand.nextDouble();
 		if (randNumber < chance)
 		{
-			heatDelta -= config.getDouble("Fuel Rod.Water Heat Reduction", 0.8);
+			heatDelta -= config.getDouble("Fuel Rod.Water Heat Reduction", 1.2);
 			
-			if (data.getHeat() > config.getDouble("Heat.Water Evaporation Threshold", 5))
+			if (data.getHeat() > config.getDouble("Heat.Water Evaporation Threshold", 100))
 				b.setTypeId(0);
 			
 			w.playEffect(b.getLocation(), Effect.EXTINGUISH, 0);
 		}
 	}
 	
-	private void ApplyColdBlockCooling(World w, Block b, int x, int y, int z)
+	private void ApplyColdBlockCooling(World w, Block b)
 	{
 		double randNumber = rand.nextDouble();
 		
@@ -226,7 +246,7 @@ public class FuelRod extends BasePatternInstance
 			b.setType(Material.WATER);
 	}
 	
-	private void SmashGlass(World w, Block b, int x, int y, int z)
+	private void SmashGlass(World w, Block b)
 	{
 		if (data.getHeat() > config.getDouble("Heat.Glass Break Threshold", 850) && rand.nextDouble() <= config.getDouble("Heat.Glass Break Chance", 0.01))
 		{
@@ -243,7 +263,7 @@ public class FuelRod extends BasePatternInstance
 		}
 	}
 	
-	private void IgniteWool(World w, Block b, int x, int y, int z)
+	private void IgniteWool(World w, Block b)
 	{
 		if (data.getHeat() > config.getDouble("Heat.Cable Ignition Threshold", 900) && rand.nextDouble() <= config.getDouble("Heat.Cable Ignition Chance", 0.1))
 		{
