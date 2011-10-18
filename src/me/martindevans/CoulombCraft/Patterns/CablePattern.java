@@ -9,40 +9,35 @@ import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
-import coulombCraft.Reactor.FuelRod;
-import coulombCraft.Reactor.FuelRodData;
+import coulombCraft.Networks.Cable;
+import coulombCraft.Networks.ResourceNetworkManager;
 
-public class FuelRodPattern extends BasePattern implements IPatternInstanceFactory
+public class CablePattern extends BasePattern
 {
 	CoulombCraft plugin;
 	
-	public FuelRodPattern(CoulombCraft plugin)
+	public CablePattern(CoulombCraft plugin)
 	{
-		super(new int[][]
-			{
-				{ -1, 20, -1 },
-				{ 20, 10, 20 },
-				{ -1, 20, -1 }
-			});
+		super(new int[][] { { 35 } });
 		
 		this.plugin = plugin;
 	}
-	
+
+	@Override
 	public BasePatternInstance Create(Block[][] blocks)
 	{
-		FuelRod r = new FuelRod(plugin, blocks);		
-		return r;
+		return new Cable(plugin, blocks);
 	}
 
 	@Override
 	protected void LoadStoredPatterns(Chunk c)
-	{		
+	{
 		int chunkX = c.getX() * 16;
 		int chunkZ = c.getZ() * 16;
 		
-		String query = "SELECT * FROM " + FuelRodData.TABLE_NAME + " WHERE " +
-				"xPos >= " + chunkX + " AND xPos < " + (chunkX + 16) + " AND " + 
-				"zPos >= " + chunkZ + " AND zPos < " + (chunkZ + 16) + " AND " + 
+		String query = "SELECT * FROM " + ResourceNetworkManager.NETWORK_BLOCK_TABLE + " WHERE " +
+				"x >= " + chunkX + " AND x < " + (chunkX + 16) + " AND " + 
+				"z >= " + chunkZ + " AND z < " + (chunkZ + 16) + " AND " + 
 				"world = '" + c.getWorld().getName() + "'";
 		
 		ResultSet rs = plugin.getSqliteDatabase().getDbConnector().sqlSafeQuery(query);
@@ -59,7 +54,7 @@ public class FuelRodPattern extends BasePattern implements IPatternInstanceFacto
 				if (w == null)
 					continue;
 				
-				plugin.getPatternMatcher().Match(w.getBlockAt(rs.getInt("xPos"), rs.getInt("yPos"), rs.getInt("zPos")));
+				plugin.getPatternMatcher().Match(w.getBlockAt(rs.getInt("x"), rs.getInt("y"), rs.getInt("z")));
 			}
 		}
 		catch (SQLException e)

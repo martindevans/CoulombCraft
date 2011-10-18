@@ -1,10 +1,15 @@
 package me.martindevans.CoulombCraft.Patterns;
 
+import java.util.Set;
+
+import me.martindevans.CoulombCraft.IChunkListener;
+
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
-public abstract class BasePattern implements IPatternInstanceFactory
+public abstract class BasePattern implements IPatternInstanceFactory, IChunkListener
 {
 	private final int[][] pattern0;
 	private final int[][] pattern90;
@@ -123,4 +128,27 @@ public abstract class BasePattern implements IPatternInstanceFactory
 		
 		return result;
 	}
+
+
+	
+	@Override
+	public Set<Chunk> getChunks()
+	{
+		return null;
+	}
+
+	@Override
+	public void ChunksUnloaded()
+	{
+	}
+	
+
+	@Override
+	public void ChunkLoaded(Chunk c)
+	{
+		LoadStoredPatterns(c);
+	}
+	
+	protected abstract void LoadStoredPatterns(Chunk c);
+
 }

@@ -4,10 +4,14 @@ import java.util.HashSet;
 import java.util.logging.Logger;
 
 import me.martindevans.CoulombCraft.Listeners.*;
+import me.martindevans.CoulombCraft.Patterns.BasePattern;
+import me.martindevans.CoulombCraft.Patterns.CablePattern;
 import me.martindevans.CoulombCraft.Patterns.FuelRodPattern;
 import me.martindevans.CoulombCraft.Patterns.FuelRodPattern2;
 import me.martindevans.CoulombCraft.Patterns.MiningRigPattern;
 import me.martindevans.CoulombCraft.Patterns.PatternMatcher;
+
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
@@ -15,12 +19,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
 import coulombCraft.Freezer.FreezerPattern;
+import coulombCraft.Reactor.FuelRodData;
 import coulombCraft.Recipes.StoneToWool;
 import coulombCraft.Signs.QueryProvider;
+import coulombCraft.Networks.ResourceNetworkManager;
 
 public class CoulombCraft extends JavaPlugin
 {	
-	private static Logger logger;
+	private static Logger logger = Logger.getLogger("Minecraft");
 	
 	private PluginManager pluginManager;
 	private PatternMatcher patterns;
@@ -28,6 +34,18 @@ public class CoulombCraft extends JavaPlugin
 	private PositionalBlockBreakListener positionalBreakListener;
 	private QueryProvider queryProvider;
 	private Database database;
+	private ResourceNetworkManager resourceNetworkManager;
+	private ChunkLoadListener chunkUnloadListener;
+	
+	public ChunkLoadListener getChunkWatcher()
+	{
+		return chunkUnloadListener;
+	}
+	
+	public ResourceNetworkManager getResourceNetworkManager()
+	{
+		return resourceNetworkManager;
+	}
 	
 	public PatternMatcher getPatternMatcher()
 	{
@@ -61,24 +79,27 @@ public class CoulombCraft extends JavaPlugin
 	
 	public void onEnable()
 	{
-		logger = Logger.getLogger("Minecraft");
-		
 		 //enable stuff
 		 pluginManager = getServer().getPluginManager();
 		 
 		 config = super.getConfiguration();
 		 LoadConfig();
 		 
+		 LoadDatabase();
+	
+		 patterns = new PatternMatcher();
+		 resourceNetworkManager = new ResourceNetworkManager(this);
 		 queryProvider = new QueryProvider(this);
+		 positionalBreakListener = new PositionalBlockBreakListener();
+		 chunkUnloadListener = new ChunkLoadListener();
 		 
-		 LoadPatterns();
 		 RegisterListeners();
+		 LoadPatterns();
 		 RegisterUpdaters();
 		 
-		 LoadDatabase();
-		 LoadStoredPatterns();
-		 
 		 LoadRecipes();
+		 for (World w : getServer().getWorlds())
+			 chunkUnloadListener.InitialiseWorld(this, this.getServer(), w);
 		 
 		 logger.info("CoulombCraft has been loaded");
 	}
@@ -91,6 +112,8 @@ public class CoulombCraft extends JavaPlugin
 	private void LoadDatabase()
 	{
 		database = new Database(this);
+		
+		database.getDbConnector().ensureTable(FuelRodData.TABLE_NAME, FuelRodData.TABLE_LAYOUT);
 	}
 	
 	private void LoadConfig()
@@ -98,18 +121,18 @@ public class CoulombCraft extends JavaPlugin
 	}
 	
 	private void LoadPatterns()
-	{
-		patterns = new PatternMatcher();
-		
-		patterns.AddPattern(new FuelRodPattern(this));
-		patterns.AddPattern(new FuelRodPattern2(this));
-		patterns.AddPattern(new MiningRigPattern(this));
-		patterns.AddPattern(new FreezerPattern(this));
+	{		
+		AddPattern(new FuelRodPattern(this));
+		AddPattern(new FuelRodPattern2(this));
+		AddPattern(new MiningRigPattern(this));
+		AddPattern(new FreezerPattern(this));
+		AddPattern(new CablePattern(this));
 	}
 	
-	private void LoadStoredPatterns()
+	private void AddPattern(BasePattern pattern)
 	{
-		FuelRodPattern2.LoadAllFromDatabase(this);
+		patterns.AddPattern(pattern);
+		chunkUnloadListener.Add(pattern, true);
 	}
 	
 	private void RegisterListeners()
@@ -117,15 +140,15 @@ public class CoulombCraft extends JavaPlugin
 		pluginManager.registerEvent(Event.Type.BLOCK_PLACE, new PatternMatchBlockListener(this), Event.Priority.Normal, this);
 		pluginManager.registerEvent(Event.Type.PLAYER_BUCKET_EMPTY, new PatternMatchingPlayerListener(this), Event.Priority.Normal, this);
 		
-		positionalBreakListener = new PositionalBlockBreakListener();
 		pluginManager.registerEvent(Event.Type.BLOCK_BREAK, positionalBreakListener, Event.Priority.Normal, this);
 		pluginManager.registerEvent(Event.Type.BLOCK_BURN, positionalBreakListener, Event.Priority.Normal, this);
 		pluginManager.registerEvent(Event.Type.BLOCK_FADE, positionalBreakListener, Event.Priority.Normal, this);
 		
+		pluginManager.registerEvent(Event.Type.CHUNK_LOAD, chunkUnloadListener, Event.Priority.Normal, this);
+		pluginManager.registerEvent(Event.Type.CHUNK_UNLOAD, chunkUnloadListener, Event.Priority.Normal, this);
+				
 		SignPlaceListener signPlaceListener = new SignPlaceListener(this);
 		pluginManager.registerEvent(Event.Type.SIGN_CHANGE, signPlaceListener, Event.Priority.Normal, this);
-		
-		pluginManager.registerEvent(Event.Type.REDSTONE_CHANGE, new CoulombRedstoneListener(), Event.Priority.Normal, this);
 	}
 	
 	private void RegisterUpdaters()
@@ -155,7 +178,6 @@ public class CoulombCraft extends JavaPlugin
 	public void onDisable()
 	{ 
 		//disable stuff
-		database.FlushDatabase();
 		database.CloseDatabase();
 		
 		logger.info("CoulombCraft has been unloaded");

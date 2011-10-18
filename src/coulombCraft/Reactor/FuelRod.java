@@ -41,10 +41,10 @@ public class FuelRod extends BasePatternInstance
 		data = new FuelRodData(coreLocation, plugin);
 		plugin.getSqliteDatabase().AddDatabaseListener(data);
 		
-		blocksInRange = FindBlocksInRange(coreLocation.getWorld(), getHeatRange());
+		blocksInRange = RemoveBlocksInPattern(FindBlocksInRange(coreLocation.getWorld(), getHeatRange()), blocks).toArray(new Block[0]);
 	}
 	
-	private Block[] FindBlocksInRange(World w, int range)
+	private List<Block> FindBlocksInRange(World w, int range)
 	{
 		List<Block> blocks = new ArrayList<Block>();
 		
@@ -61,7 +61,20 @@ public class FuelRod extends BasePatternInstance
 			}
 		}
 		
-		return blocks.toArray(new Block[0]);
+		return blocks;
+	}
+	
+	private List<Block> RemoveBlocksInPattern(List<Block> blocks, Block[][] pattern)
+	{
+		for (int i = 0; i < pattern.length; i++)
+		{
+			for (int j = 0; j < pattern[i].length; j++)
+			{
+				blocks.remove(pattern[i][j]);
+			}
+		}
+		
+		return blocks;
 	}
 	
 	@Override
@@ -127,8 +140,6 @@ public class FuelRod extends BasePatternInstance
 	private void UpdateNearbyBlocks()
 	{
 		World world = coreLocation.getWorld();
-		int range = getHeatRange();
-		
 		for (int i = 0; i < blocksInRange.length; i++)
 		{
 			Block b = blocksInRange[i];
@@ -194,7 +205,6 @@ public class FuelRod extends BasePatternInstance
 				case 10:	//Lava (flowing)
 				case 11:	//Lava (still)
 				{
-					//Increase core temperature
 					heatProduction *= config.getDouble("Fuel Rod.Lava Source Bonus", 1.5);
 					continue;
 				}
@@ -302,5 +312,14 @@ public class FuelRod extends BasePatternInstance
 		return variable.equalsIgnoreCase("temperature") ||
 			   variable.equalsIgnoreCase("heat production") ||
 			   variable.equalsIgnoreCase("heat capacity");
+	}
+	
+	@Override
+	public void ChunksUnloaded()
+	{
+		super.ChunksUnloaded();
+		
+		data.Flush();
+		data.Unload();
 	}
 }

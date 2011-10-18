@@ -2,6 +2,7 @@ package me.martindevans.CoulombCraft.Patterns;
 
 import me.martindevans.CoulombCraft.CoulombCraft;
 
+import org.bukkit.Chunk;
 import org.bukkit.block.Block;
 
 import coulombCraft.MiningRig.MiningRig;
@@ -31,5 +32,12 @@ public class MiningRigPattern extends BasePattern implements IPatternInstanceFac
 	public BasePatternInstance Create(Block[][] blocks)
 	{
 		return new MiningRig(plugin, blocks);
+	}
+
+	@Override
+	protected void LoadStoredPatterns(Chunk c)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

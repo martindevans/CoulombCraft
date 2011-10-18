@@ -1,13 +1,17 @@
 package me.martindevans.CoulombCraft.Patterns;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import me.martindevans.CoulombCraft.CoulombCraft;
+import me.martindevans.CoulombCraft.IChunkListener;
 import me.martindevans.CoulombCraft.ITick;
 import me.martindevans.CoulombCraft.Integer3;
 import me.martindevans.CoulombCraft.Listeners.IBreakListener;
 import me.martindevans.CoulombCraft.Listeners.PositionalBlockBreakListener;
 
+import org.bukkit.Chunk;
 import org.bukkit.block.Block;
-
 import coulombCraft.Signs.IQueryable;
 import coulombCraft.Signs.QueryProvider;
 
@@ -16,7 +20,7 @@ import coulombCraft.Signs.QueryProvider;
  * @author Martin
  *
  */
-public abstract class BasePatternInstance implements IBreakListener, ITick, IQueryable
+public abstract class BasePatternInstance implements IBreakListener, ITick, IQueryable, IChunkListener
 {
 	protected Block[][] blocks;
 	protected final CoulombCraft plugin;
@@ -24,6 +28,12 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 	public Block[][] getBlocks()
 	{
 		return blocks;
+	}
+	
+	private Set<Chunk> chunks = new HashSet<Chunk>();
+	public Set<Chunk> getChunks()
+	{
+		return chunks;
 	}
 
 	boolean patternIntact = true;
@@ -47,6 +57,8 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 					int y = blocks[i][j].getY();
 					int z = blocks[i][j].getZ();
 					
+					chunks.add(blocks[i][j].getChunk());
+					
 					breakListener.registerListener(this, x, y, z);
 					queryProvider.RegisterQueryable(new Integer3(x, y, z), this);
 				}
@@ -54,11 +66,18 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 		}
 		
 		plugin.AddTickListener(this);
+		plugin.getChunkWatcher().Add(this);
 	}
-
+	
+	public void ChunksUnloaded()
+	{
+		plugin.getChunkWatcher().Remove(this);
+		plugin.RemoveTickListener(this);
+	}
+	
 	@Override
 	public void Tick()
-	{
+	{		
 		if (!patternIntact && !patternUnloaded)
 		{
 			patternUnloaded = true;
@@ -120,5 +139,10 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 	public boolean CanAnswer(String variable)
 	{
 		return false;
+	}
+
+	@Override
+	public void ChunkLoaded(Chunk c)
+	{
 	}
 }

@@ -52,7 +52,6 @@ public class FuelRodData implements IDatabaseListener
 		database = plugin.getSqliteDatabase();
 		
 		database.AddDatabaseListener(this);
-		database.getDbConnector().ensureTable(TABLE_NAME, TABLE_LAYOUT);
 		
 		if (!TryLoad())
 			Insert();
@@ -68,6 +67,8 @@ public class FuelRodData implements IDatabaseListener
 				return false;
 			
 			heat = rs.getFloat("heat");
+		
+			CoulombCraft.getLogger().info("Fuel rod reloaded");
 			
 			return true;
 		}
@@ -81,19 +82,24 @@ public class FuelRodData implements IDatabaseListener
 	
 	private void Insert()
 	{
-		database.getDbConnector().insertSafeQuery("INSERT INTO " + TABLE_NAME + " VALUES (" + heat + ", " + x + ", " + y + ", " + z + ", '" + world + "')");
+		CoulombCraft.getLogger().info("Fuel rod inserted");
+		
+		int i = database.getDbConnector().insertSafeQuery("INSERT INTO " + TABLE_NAME + " VALUES (" + heat + ", " + x + ", " + y + ", " + z + ", '" + world + "')");
+		CoulombCraft.getLogger().info("Inserting " + i + " rod(s) into database");
 	}
 	
 	public void Destroy()
 	{
 		int i = database.getDbConnector().deleteSafeQuery("DELETE FROM " + TABLE_NAME + " WHERE xPos = " + x + " AND yPos = " + y + " AND zPos = " + z + " AND world = '" + world + "'");
-		CoulombCraft.getLogger().info("Removing rod from database " + i);
+		CoulombCraft.getLogger().info("Removing " + i + " rod(s) from database");
 		
 		Unload();
 	}
 	
 	public void Unload()
 	{
+		CoulombCraft.getLogger().info("Fuel rod unloaded");
+		
 		database.RemoveDatabaseListener(this);
 	}
 

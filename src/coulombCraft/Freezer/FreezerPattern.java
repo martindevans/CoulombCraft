@@ -4,6 +4,7 @@ import me.martindevans.CoulombCraft.CoulombCraft;
 import me.martindevans.CoulombCraft.Patterns.BasePattern;
 import me.martindevans.CoulombCraft.Patterns.BasePatternInstance;
 
+import org.bukkit.Chunk;
 import org.bukkit.block.Block;
 
 public class FreezerPattern extends BasePattern
@@ -25,5 +26,12 @@ public class FreezerPattern extends BasePattern
 	public BasePatternInstance Create(Block[][] blocks)
 	{
 		return new Freezer(plugin, blocks);		
+	}
+
+	@Override
+	protected void LoadStoredPatterns(Chunk c)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
