@@ -40,8 +40,6 @@ public class Cable extends BasePatternInstance implements IQueryable
 				* plugin.getConfiguration().getDouble("Power.Generation Efficiency", 0.5);
 		power.Add(generation);
 		
-		CoulombCraft.getLogger().info(generation + "");
-		
 		heatLastTick = heat;
 		heat = 0;
 		
