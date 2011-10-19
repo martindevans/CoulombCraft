@@ -11,8 +11,10 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.config.Configuration;
+
+import coulombCraft.Networks.Cable;
 import me.martindevans.CoulombCraft.CoulombCraft;
-import me.martindevans.CoulombCraft.TemperatureColourMap;
+import me.martindevans.CoulombCraft.Integer3;
 import me.martindevans.CoulombCraft.Patterns.BasePatternInstance;
 
 public class FuelRod extends BasePatternInstance
@@ -139,6 +141,8 @@ public class FuelRod extends BasePatternInstance
 
 	private void UpdateNearbyBlocks()
 	{
+		List<Cable> cableInRange = new ArrayList<Cable>();
+		
 		World world = coreLocation.getWorld();
 		for (int i = 0; i < blocksInRange.length; i++)
 		{
@@ -154,15 +158,10 @@ public class FuelRod extends BasePatternInstance
 				case 0:		//air
 					continue;
 				case 35:	//wool
-				{
-					//temp code to change colour
-					byte colour = TemperatureColourMap.GetColour(data.getHeat(), getHeatCapacity());
-					if (b.getData() != colour)
-						b.setData(colour);
-					
+				{					
 					IgniteWool(world, b);
 					
-					//TODO: Increase temperature of wool
+					cableInRange.add((Cable)plugin.getQueryProvider().GetQueryable(new Integer3(b.getLocation())));
 					continue;
 				}
 				case 20:	//Glass
@@ -220,6 +219,10 @@ public class FuelRod extends BasePatternInstance
 				}
 			}
 		}
+		
+		float cableHeat = data.getHeat() / ((float)cableInRange.size());
+		for (Cable c : cableInRange)
+			c.AddHeat(cableHeat);
 	}
 	
 	private void IgniteWood(World w, Block b)
@@ -303,7 +306,7 @@ public class FuelRod extends BasePatternInstance
 			return sigfig4.format(heatProduction);
 		else if (variable.equalsIgnoreCase("heat capacity"))
 			return sigfig2.format(getHeatCapacity());
-			return null;
+		return null;
 	}
 	
 	@Override

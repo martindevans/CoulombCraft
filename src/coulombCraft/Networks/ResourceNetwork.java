@@ -6,8 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.martindevans.CoulombCraft.CoulombCraft;
+import me.martindevans.CoulombCraft.IDatabaseListener;
 
-public class ResourceNetwork
+public class ResourceNetwork implements IDatabaseListener
 {
 	public final long Id;
 	public final ResourceNetworkManager manager;
@@ -18,6 +19,8 @@ public class ResourceNetwork
 	{
 		Id = id;
 		this.manager = manager;
+		
+		manager.Database.AddDatabaseListener(this);
 	}
 	
 	public void AddBlock(int x, int y, int z, String world)
@@ -98,6 +101,13 @@ public class ResourceNetwork
 		}
 	}
 	
+	@Override
+	public void Flush()
+	{
+		for (Resource r : resources.values())
+			r.WriteToDatabase();
+	}
+	
 	public class Resource
 	{
 		private String Name;
@@ -117,14 +127,12 @@ public class ResourceNetwork
 			if (masterCopy != null)
 				return masterCopy.getAmount();
 			
-			UpdateFromDatabase();
 			return Amount;
 		}
 		
 		public void Add(double amount)
 		{
 			Amount += amount;
-			manager.Database.getDbConnector().updateSafeQuery("UPDATE " + ResourceNetworkManager.NETWORK_RESOURCE_TABLE + " SET quantity = " + getAmount() + " WHERE networkId = " + Id + " AND name = " + Name);
 		}
 		
 		public Resource getMasterResource()
@@ -147,7 +155,7 @@ public class ResourceNetwork
 				masterCopy.UpdateFromDatabase();
 			else
 			{
-				ResultSet rs = manager.Database.getDbConnector().sqlSafeQuery("SELECT quantity FROM " + ResourceNetworkManager.NETWORK_RESOURCE_TABLE + " WHERE networkId = " + Id + " AND name = " + Name);
+				ResultSet rs = manager.Database.getDbConnector().sqlSafeQuery("SELECT quantity FROM " + ResourceNetworkManager.NETWORK_RESOURCE_TABLE + " WHERE networkId = " + Id + " AND name = '" + Name + "'");
 				
 				try
 				{
@@ -169,9 +177,14 @@ public class ResourceNetwork
 			}
 		}
 		
+		public void WriteToDatabase()
+		{
+			manager.Database.getDbConnector().updateSafeQuery("UPDATE " + ResourceNetworkManager.NETWORK_RESOURCE_TABLE + " SET quantity = " + getAmount() + " WHERE networkId = " + Id + " AND name = '" + Name + "'");
+		}
+		
 		public void Delete()
 		{
-			manager.Database.getDbConnector().deleteSafeQuery("DELETE FROM " + ResourceNetworkManager.NETWORK_RESOURCE_TABLE + " WHERE networkId = " + Id + " AND name = " + Name);
+			manager.Database.getDbConnector().deleteSafeQuery("DELETE FROM " + ResourceNetworkManager.NETWORK_RESOURCE_TABLE + " WHERE networkId = " + Id + " AND name = '" + Name + "'");
 		}
 		
 		void MakeMirror(Resource master)

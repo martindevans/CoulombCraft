@@ -44,6 +44,11 @@ public class QueryProvider
 		return null;
 	}
 	
+	public IQueryable GetQueryable(Integer3 position)
+	{
+		return queryables.get(position);
+	}
+	
 	public void RegisterQueryable(Integer3 position, IQueryable queryable)
 	{
 		queryables.put(position, queryable);

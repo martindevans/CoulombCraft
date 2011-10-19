@@ -60,6 +60,19 @@ Heat:
 	#The temperature above which ice melts
 	Ice Melt Threshold: 50
 
+Power:
+	#The exponent to apply to heat to calculate power generation
+	Heat Exponent: 1.5
+	
+	#The exponent to apply to heat to calculate power generation
+	Heat Multiplier: 0.03
+	
+	#The amount of power a single piece of cable drains
+	Cable Power Drain: 0.5
+	
+	#How much generated power gets passed onto the network
+	Generation Efficiency: 0.5
+
 Mining Rig:
 	#The number of ticks between mining head movements
 	Move Ticks: 1
