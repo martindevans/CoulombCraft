@@ -60,7 +60,7 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 					chunks.add(blocks[i][j].getChunk());
 					
 					breakListener.registerListener(this, x, y, z);
-					queryProvider.RegisterQueryable(new Integer3(x, y, z), this);
+					queryProvider.RegisterQueryable(blocks[i][j].getLocation(), this);
 				}
 			}
 		}

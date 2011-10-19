@@ -9,35 +9,35 @@ import me.martindevans.CoulombCraft.Integer3;
 
 public class QueryProvider
 {
-	HashMap<Integer3, IQueryable> queryables = new HashMap<Integer3, IQueryable>();
+	HashMap<Location, IQueryable> queryables = new HashMap<Location, IQueryable>();
 	
 	public QueryProvider(CoulombCraft plugin)
 	{
 	}
 	
 	public IQueryable GetAnyAdjacentQueryable(Location location, String query)
-	{
-		IQueryable queryable = queryables.get(new Integer3(location.getBlockX() - 1, location.getBlockY(), location.getBlockZ()));
+	{		
+		IQueryable queryable = queryables.get(location.clone().add(-1, 0, 0));
 		if (queryable != null && queryable.CanAnswer(query))
 			return queryable;
 		
-		queryable = queryables.get(new Integer3(location.getBlockX() + 1, location.getBlockY(), location.getBlockZ()));
+		queryable = queryables.get(location.clone().add(1, 0, 0));
 		if (queryable != null && queryable.CanAnswer(query))
 			return queryable;
 		
-		queryable = queryables.get(new Integer3(location.getBlockX(), location.getBlockY() - 1, location.getBlockZ()));
+		queryable = queryables.get(location.clone().add(0, -1, 0));
 		if (queryable != null && queryable.CanAnswer(query))
 			return queryable;
 		
-		queryable = queryables.get(new Integer3(location.getBlockX(), location.getBlockY() + 1, location.getBlockZ()));
+		queryable = queryables.get(location.clone().add(0, 1, 0));
 		if (queryable != null && queryable.CanAnswer(query))
 			return queryable;
 		
-		queryable = queryables.get(new Integer3(location.getBlockX(), location.getBlockY(), location.getBlockZ() - 1));
+		queryable = queryables.get(location.clone().add(0, 0, -1));
 		if (queryable != null && queryable.CanAnswer(query))
 			return queryable;
 		
-		queryable = queryables.get(new Integer3(location.getBlockX(), location.getBlockY(), location.getBlockZ() + 1));
+		queryable = queryables.get(location.clone().add(0, 0, 1));
 		if (queryable != null && queryable.CanAnswer(query))
 			return queryable;
 		
@@ -49,7 +49,7 @@ public class QueryProvider
 		return queryables.get(position);
 	}
 	
-	public void RegisterQueryable(Integer3 position, IQueryable queryable)
+	public void RegisterQueryable(Location position, IQueryable queryable)
 	{
 		queryables.put(position, queryable);
 	}
