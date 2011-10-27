@@ -5,13 +5,11 @@ import java.text.DecimalFormat;
 import org.bukkit.block.Block;
 
 import coulombCraft.Networks.ResourceNetwork.Resource;
-import coulombCraft.Signs.IQueryable;
-
 import me.martindevans.CoulombCraft.CoulombCraft;
 import me.martindevans.CoulombCraft.TemperatureColourMap;
 import me.martindevans.CoulombCraft.Patterns.BasePatternInstance;
 
-public class Cable extends BasePatternInstance implements IQueryable
+public class Cable extends BasePatternInstance
 {
 	ResourceNetwork network;
 	Resource power;
@@ -68,7 +66,7 @@ public class Cable extends BasePatternInstance implements IQueryable
 	@Override
 	public boolean IsBreakable(Block b)
 	{
-		return network.GetResources().length == 0;
+		return false;
 	}
 	
 	@Override

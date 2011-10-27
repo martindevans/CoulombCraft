@@ -5,7 +5,6 @@ import java.util.HashMap;
 import org.bukkit.Location;
 
 import me.martindevans.CoulombCraft.CoulombCraft;
-import me.martindevans.CoulombCraft.Integer3;
 
 public class QueryProvider
 {
@@ -44,9 +43,9 @@ public class QueryProvider
 		return null;
 	}
 	
-	public IQueryable GetQueryable(Integer3 position)
+	public IQueryable GetQueryable(Location location)
 	{
-		return queryables.get(position);
+		return queryables.get(location);
 	}
 	
 	public void RegisterQueryable(Location position, IQueryable queryable)
@@ -54,7 +53,7 @@ public class QueryProvider
 		queryables.put(position, queryable);
 	}
 	
-	public void UnregisterQueryable(Integer3 position)
+	public void UnregisterQueryable(Location position)
 	{
 		queryables.remove(position);
 	}

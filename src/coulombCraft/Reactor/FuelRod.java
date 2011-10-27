@@ -13,8 +13,8 @@ import org.bukkit.block.Block;
 import org.bukkit.util.config.Configuration;
 
 import coulombCraft.Networks.Cable;
+import coulombCraft.Signs.IQueryable;
 import me.martindevans.CoulombCraft.CoulombCraft;
-import me.martindevans.CoulombCraft.Integer3;
 import me.martindevans.CoulombCraft.Patterns.BasePatternInstance;
 
 public class FuelRod extends BasePatternInstance
@@ -23,13 +23,12 @@ public class FuelRod extends BasePatternInstance
 	
 	double heatDelta;
 	double heatProduction;
+	int generatorCount = 0;
 	
 	Configuration config;
-	
 	Random rand = new Random();
 	
 	Location coreLocation;
-	
 	Block[] blocksInRange;
 	
 	public FuelRod(CoulombCraft plugin, Block[][] blocks)
@@ -110,10 +109,16 @@ public class FuelRod extends BasePatternInstance
 	{
 		heatProduction = getHeatProduction();
 		
-		UpdateNearbyBlocks();
+		List<Cable> cable = UpdateNearbyBlocks();
 		
 		heatProduction += heatDelta;
 		data.setHeat((float)Math.max(0, data.getHeat() + heatProduction));
+		
+		float cableHeat = data.getHeat() / ((float)cable.size());
+		for (Cable c : cable)
+			if (c != null)
+				c.AddHeat(cableHeat);
+		generatorCount = cable.size();
 		
 		heatDelta = 0;
 		
@@ -139,7 +144,7 @@ public class FuelRod extends BasePatternInstance
 		super.Tick();
 	}
 
-	private void UpdateNearbyBlocks()
+	private List<Cable> UpdateNearbyBlocks()
 	{
 		List<Cable> cableInRange = new ArrayList<Cable>();
 		
@@ -147,7 +152,6 @@ public class FuelRod extends BasePatternInstance
 		for (int i = 0; i < blocksInRange.length; i++)
 		{
 			Block b = blocksInRange[i];
-			b.getChunk().load();
 			int type = b.getTypeId();
 			
 			if (type == Material.AIR.getId())
@@ -161,7 +165,11 @@ public class FuelRod extends BasePatternInstance
 				{					
 					IgniteWool(world, b);
 					
-					cableInRange.add((Cable)plugin.getQueryProvider().GetQueryable(new Integer3(b.getLocation())));
+					IQueryable q = plugin.getQueryProvider().GetQueryable(b.getLocation());
+					if (q instanceof Cable)
+						cableInRange.add((Cable)q);
+					else
+						CoulombCraft.getLogger().info("Found wool, not Cable");
 					continue;
 				}
 				case 20:	//Glass
@@ -220,9 +228,7 @@ public class FuelRod extends BasePatternInstance
 			}
 		}
 		
-		float cableHeat = data.getHeat() / ((float)cableInRange.size());
-		for (Cable c : cableInRange)
-			c.AddHeat(cableHeat);
+		return cableInRange;
 	}
 	
 	private void IgniteWood(World w, Block b)
@@ -306,6 +312,8 @@ public class FuelRod extends BasePatternInstance
 			return sigfig4.format(heatProduction);
 		else if (variable.equalsIgnoreCase("heat capacity"))
 			return sigfig2.format(getHeatCapacity());
+		else if (variable.equalsIgnoreCase("generators"))
+			return "" + generatorCount;
 		return null;
 	}
 	
@@ -314,12 +322,15 @@ public class FuelRod extends BasePatternInstance
 	{
 		return variable.equalsIgnoreCase("temperature") ||
 			   variable.equalsIgnoreCase("heat production") ||
-			   variable.equalsIgnoreCase("heat capacity");
+			   variable.equalsIgnoreCase("heat capacity") ||
+			   variable.equalsIgnoreCase("generators");
 	}
 	
 	@Override
 	public void ChunksUnloaded()
 	{
+		CoulombCraft.getLogger().info("Fuel reload chunks unloaded");
+		
 		super.ChunksUnloaded();
 		
 		data.Flush();

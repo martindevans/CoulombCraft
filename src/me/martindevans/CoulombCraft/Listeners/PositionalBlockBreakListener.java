@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import me.martindevans.CoulombCraft.Integer3;
-
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.Cancellable;
@@ -16,7 +14,7 @@ import org.bukkit.event.block.BlockListener;
 
 public class PositionalBlockBreakListener extends BlockListener
 {
-	HashMap<Integer3, ArrayList<IBreakListener>> listeners = new HashMap<Integer3, ArrayList<IBreakListener>>();
+	HashMap<Location, ArrayList<IBreakListener>> listeners = new HashMap<Location, ArrayList<IBreakListener>>();
 	
 	@Override
 	public void onBlockBreak(BlockBreakEvent event)
@@ -41,7 +39,7 @@ public class PositionalBlockBreakListener extends BlockListener
 		
 		Location l = b.getLocation();
 		
-		List<IBreakListener> correctlyPositionedListeners = GetList(l.getBlockX(), l.getBlockY(), l.getBlockZ(), false);
+		List<IBreakListener> correctlyPositionedListeners = GetList(l, false);
 		
 		if (correctlyPositionedListeners == null)
 			return;
@@ -74,29 +72,28 @@ public class PositionalBlockBreakListener extends BlockListener
 		}
 	}
 	
-	public void registerListener(IBreakListener listener, int x, int y, int z)
+	public void registerListener(IBreakListener listener, Location location)
 	{
-		GetList(x, y, z, true).add(listener);
+		GetList(location, true).add(listener);
 	}
 	
-	public void unregisterListener(IBreakListener listener, int x, int y, int z)
+	public void unregisterListener(IBreakListener listener, Location l)
 	{
-		ArrayList<IBreakListener> list = GetList(x, y, z, false);
+		ArrayList<IBreakListener> list = GetList(l, false);
 		if (list != null)
 		{
 			list.remove(listener);
 			
 			if (list.size() == 0)
 			{
-				listeners.remove(new Integer3(x, y, z));
+				listeners.remove(l);
 			}
 		}
 	}
 	
-	private ArrayList<IBreakListener> GetList(int x, int y, int z, boolean create)
+	private ArrayList<IBreakListener> GetList(Location location, boolean create)
 	{
-		Integer3 pos = new Integer3(x, y, z);
-		ArrayList<IBreakListener> l = listeners.get(pos);
+		ArrayList<IBreakListener> l = listeners.get(location);
 		
 		if (l == null)
 		{
@@ -104,7 +101,7 @@ public class PositionalBlockBreakListener extends BlockListener
 				return null;
 			
 			l = new ArrayList<IBreakListener>();
-			listeners.put(pos, l);
+			listeners.put(location, l);
 		}
 		
 		return l;

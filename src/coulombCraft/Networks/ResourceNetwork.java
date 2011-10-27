@@ -133,6 +133,7 @@ public class ResourceNetwork implements IDatabaseListener
 		public void Add(double amount)
 		{
 			Amount += amount;
+			Amount = Math.max(0, Amount);
 		}
 		
 		public Resource getMasterResource()

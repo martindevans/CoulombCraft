@@ -2,6 +2,8 @@ package me.martindevans.CoulombCraft.Listeners;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import me.martindevans.CoulombCraft.IChunkListener;
 
 import org.bukkit.Chunk;
@@ -22,9 +24,27 @@ public class ChunkLoadListener extends WorldListener
 	{
 		for (IChunkListener listener : listenersToUnloads.toArray(new IChunkListener[0]))
 		{
-			if (!listener.getChunks().contains(event.getChunk()))
-				continue;
-			listener.ChunksUnloaded();
+			Set<Chunk> chunks = listener.getChunks();
+			Chunk unloaded = event.getChunk();
+			
+			for (Chunk c : chunks)
+			{
+				if (!c.getWorld().equals(unloaded.getWorld()))
+				{
+					continue;
+				}
+				if (c.getX() != unloaded.getX())
+				{
+					continue;
+				}
+				if (c.getZ() != unloaded.getZ())
+				{
+					continue;
+				}
+					
+				listener.ChunksUnloaded();
+				break;
+			}
 		}
 	}
 	

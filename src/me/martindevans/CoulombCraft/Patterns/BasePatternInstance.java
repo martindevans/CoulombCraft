@@ -6,11 +6,11 @@ import java.util.Set;
 import me.martindevans.CoulombCraft.CoulombCraft;
 import me.martindevans.CoulombCraft.IChunkListener;
 import me.martindevans.CoulombCraft.ITick;
-import me.martindevans.CoulombCraft.Integer3;
 import me.martindevans.CoulombCraft.Listeners.IBreakListener;
 import me.martindevans.CoulombCraft.Listeners.PositionalBlockBreakListener;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import coulombCraft.Signs.IQueryable;
 import coulombCraft.Signs.QueryProvider;
@@ -53,24 +53,24 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 			{
 				if (blocks[i][j] != null)
 				{
-					int x = blocks[i][j].getX();
-					int y = blocks[i][j].getY();
-					int z = blocks[i][j].getZ();
+					Location location = blocks[i][j].getLocation();
 					
 					chunks.add(blocks[i][j].getChunk());
 					
-					breakListener.registerListener(this, x, y, z);
+					breakListener.registerListener(this, location);
 					queryProvider.RegisterQueryable(blocks[i][j].getLocation(), this);
 				}
 			}
 		}
 		
-		plugin.AddTickListener(this);
 		plugin.getChunkWatcher().Add(this);
+		plugin.AddTickListener(this);
 	}
 	
 	public void ChunksUnloaded()
 	{
+		CoulombCraft.getLogger().info("Pattern unloaded");
+		
 		plugin.getChunkWatcher().Remove(this);
 		plugin.RemoveTickListener(this);
 	}
@@ -92,13 +92,11 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 				for (int j = 0; j < blocks[i].length; j++)
 				{
 					if (blocks[i][j] != null)
-					{
-						int x = blocks[i][j].getX();
-						int y = blocks[i][j].getY();
-						int z = blocks[i][j].getZ();
+					{						
+						Location location = blocks[i][j].getLocation();
 						
-						breakListener.unregisterListener(this, x, y, z);
-						queryProvider.UnregisterQueryable(new Integer3(x, y, z));
+						breakListener.unregisterListener(this, location);
+						queryProvider.UnregisterQueryable(blocks[i][j].getLocation());
 					}
 				}
 			}
