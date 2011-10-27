@@ -10,6 +10,7 @@ import me.martindevans.CoulombCraft.Patterns.FuelRodPattern;
 import me.martindevans.CoulombCraft.Patterns.FuelRodPattern2;
 import me.martindevans.CoulombCraft.Patterns.MiningRigPattern;
 import me.martindevans.CoulombCraft.Patterns.PatternMatcher;
+import me.martindevans.CoulombCraft.Patterns.SuperconductorPattern;
 
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -127,6 +128,7 @@ public class CoulombCraft extends JavaPlugin
 		AddPattern(new MiningRigPattern(this));
 		AddPattern(new FreezerPattern(this));
 		AddPattern(new CablePattern(this));
+		AddPattern(new SuperconductorPattern(this));
 	}
 	
 	private void AddPattern(BasePattern pattern)
