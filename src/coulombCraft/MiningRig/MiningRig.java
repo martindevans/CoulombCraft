@@ -3,6 +3,8 @@ package coulombCraft.MiningRig;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 import me.martindevans.CoulombCraft.CoulombCraft;
 import me.martindevans.CoulombCraft.Patterns.BasePatternInstance;
@@ -21,7 +23,7 @@ public class MiningRig extends BasePatternInstance
 	{
 		super(plugin, blocks);
 		
-		homeHeadPosition = blocks[1][1].getLocation();
+		homeHeadPosition = blocks[0][0].getLocation().clone().add(1, 0, 1);
 		
 		plugin.getServer().broadcastMessage("Created mining rig");
 	}
@@ -84,6 +86,11 @@ public class MiningRig extends BasePatternInstance
 			stop = true;
 		
 		headA.setType(Material.AIR);
+		
+		ItemStack stack = new ItemStack(headB.getType(), 1);
+		if (stack.getType().isBlock())
+			headB.getWorld().dropItemNaturally(headB.getLocation(), new ItemStack(headB.getType(), 1));
+		
 		headB.setType(Material.DIAMOND_BLOCK);
 	}
 }

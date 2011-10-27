@@ -16,7 +16,7 @@ public class MiningRigPattern extends BasePattern implements IPatternInstanceFac
 		super(new int[][]
 			{
 				{ 49, 49, 49, 49, 49, 49, 49, 49, 49 },
-				{ 49, 57, -1, -1, -1, -1, -1, -1, 49 },
+				{ 49, -1, -1, -1, -1, -1, -1, -1, 49 },
 				{ 49, -1, -1, -1, -1, -1, -1, -1, 49 },
 				{ 49, -1, -1, -1, -1, -1, -1, -1, 49 },
 				{ 49, -1, -1, -1, -1, -1, -1, -1, 49 },
