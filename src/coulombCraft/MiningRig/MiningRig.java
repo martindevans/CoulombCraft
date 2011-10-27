@@ -87,9 +87,9 @@ public class MiningRig extends BasePatternInstance
 		
 		headA.setType(Material.AIR);
 		
-		ItemStack stack = new ItemStack(headB.getType(), 1);
-		if (stack.getType().isBlock())
-			headB.getWorld().dropItemNaturally(headB.getLocation(), new ItemStack(headB.getType(), 1));
+		//ItemStack stack = new ItemStack(headB.getType(), 1);
+		//if (stack.getType().isBlock())
+		//	headB.getWorld().dropItemNaturally(headB.getLocation(), new ItemStack(headB.getType(), 1));
 		
 		headB.setType(Material.DIAMOND_BLOCK);
 	}
