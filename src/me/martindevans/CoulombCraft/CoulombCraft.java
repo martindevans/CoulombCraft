@@ -23,6 +23,7 @@ import coulombCraft.Freezer.FreezerPattern;
 import coulombCraft.Reactor.FuelRodData;
 import coulombCraft.Recipes.StoneToWool;
 import coulombCraft.Signs.QueryProvider;
+import coulombCraft.Signs.SignUpdateTask;
 import coulombCraft.Networks.ResourceNetworkManager;
 
 public class CoulombCraft extends JavaPlugin
@@ -115,6 +116,12 @@ public class CoulombCraft extends JavaPlugin
 		database = new Database(this);
 		
 		database.getDbConnector().ensureTable(FuelRodData.TABLE_NAME, FuelRodData.TABLE_LAYOUT);
+		
+		database.getDbConnector().ensureTable(ResourceNetworkManager.NETWORK_TABLE, ResourceNetworkManager.NETWORK_TABLE_LAYOUT);
+		database.getDbConnector().ensureTable(ResourceNetworkManager.NETWORK_BLOCK_TABLE, ResourceNetworkManager.NETWORK_BLOCK_TABLE_LAYOUT);
+		database.getDbConnector().ensureTable(ResourceNetworkManager.NETWORK_RESOURCE_TABLE, ResourceNetworkManager.NETWORK_RESOURCE_TABLE_LAYOUT);
+		
+		database.getDbConnector().ensureTable(SignUpdateTask.TABLE_NAME, SignUpdateTask.TABLE_LAYOUT);
 	}
 	
 	private void LoadConfig()

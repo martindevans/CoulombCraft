@@ -69,10 +69,7 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 	
 	public void ChunksUnloaded()
 	{
-		CoulombCraft.getLogger().info("Pattern unloaded");
-		
-		plugin.getChunkWatcher().Remove(this);
-		plugin.RemoveTickListener(this);
+		UnloadPattern();
 	}
 	
 	@Override
@@ -80,29 +77,35 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 	{		
 		if (!patternIntact && !patternUnloaded)
 		{
-			patternUnloaded = true;
-			
-			plugin.RemoveTickListener(this);
-			
-			PositionalBlockBreakListener breakListener = plugin.getPositionalBreakListener();
-			QueryProvider queryProvider = plugin.getQueryProvider();
-			
-			for (int i = 0; i < blocks.length; i++)
+			UnloadPattern();
+		}
+	}
+
+	private void UnloadPattern()
+	{
+		patternUnloaded = true;
+		
+		plugin.RemoveTickListener(this);
+		plugin.getChunkWatcher().Remove(this);
+		
+		PositionalBlockBreakListener breakListener = plugin.getPositionalBreakListener();
+		QueryProvider queryProvider = plugin.getQueryProvider();
+		
+		for (int i = 0; i < blocks.length; i++)
+		{
+			for (int j = 0; j < blocks[i].length; j++)
 			{
-				for (int j = 0; j < blocks[i].length; j++)
-				{
-					if (blocks[i][j] != null)
-					{						
-						Location location = blocks[i][j].getLocation();
-						
-						breakListener.unregisterListener(this, location);
-						queryProvider.UnregisterQueryable(blocks[i][j].getLocation());
-					}
+				if (blocks[i][j] != null)
+				{						
+					Location location = blocks[i][j].getLocation();
+					
+					breakListener.unregisterListener(this, location);
+					queryProvider.UnregisterQueryable(blocks[i][j].getLocation());
 				}
 			}
-			
-			OnPatternDestroyed();
 		}
+		
+		OnPatternDestroyed();
 	}
 
 	@Override

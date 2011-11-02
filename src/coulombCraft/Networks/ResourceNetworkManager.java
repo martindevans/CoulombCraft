@@ -14,23 +14,19 @@ public class ResourceNetworkManager
 	
 	HashMap<Long, ResourceNetwork> cachedNetworkInstances = new HashMap<Long, ResourceNetwork>();
 	
-	static final String NETWORK_TABLE = "ResourceNetwork"; 
+	public static final String NETWORK_TABLE = "ResourceNetwork"; 
 	public static final String NETWORK_TABLE_LAYOUT = "id INTEGER PRIMARY KEY";
 	
 	public static final String NETWORK_BLOCK_TABLE = "ResourceNetworkBlocks";
 	public static final String NETWORK_BLOCK_TABLE_LAYOUT = "x INTEGER, y INTEGER, z INTEGER, world VARCHAR(100), networkId INTEGER, FOREIGN KEY(networkId) REFERENCES " + NETWORK_TABLE + "(id), PRIMARY KEY(x, y, z, world)";
 	
-	static final String NETWORK_RESOURCE_TABLE = "ResourceNetworkResources";
+	public static final String NETWORK_RESOURCE_TABLE = "ResourceNetworkResources";
 	public static final String NETWORK_RESOURCE_TABLE_LAYOUT = "name VARCHAR(100), quantity DOUBLE, networkId INTEGER, PRIMARY KEY(name, networkId), FOREIGN KEY(networkId) REFERENCES " + NETWORK_TABLE + "(id)";
 	
 	public ResourceNetworkManager(CoulombCraft plugin)
 	{
 		this.plugin = plugin;
 		this.Database = plugin.getSqliteDatabase();
-		
-		Database.getDbConnector().ensureTable(NETWORK_TABLE, NETWORK_TABLE_LAYOUT);
-		Database.getDbConnector().ensureTable(NETWORK_BLOCK_TABLE, NETWORK_BLOCK_TABLE_LAYOUT);
-		Database.getDbConnector().ensureTable(NETWORK_RESOURCE_TABLE, NETWORK_RESOURCE_TABLE_LAYOUT);
 	}
 	
 	public ResourceNetwork getNetworkByBlock(int x, int y, int z, String world)

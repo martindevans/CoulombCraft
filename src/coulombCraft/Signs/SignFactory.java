@@ -9,9 +9,9 @@ import me.martindevans.CoulombCraft.CoulombCraft;
 import me.martindevans.CoulombCraft.Utility;
 
 public class SignFactory
-{
+{	
 	public static void MakeSignFromStrings(String[] input, Block b, Player p, CoulombCraft plugin)
-	{		
+	{
 		if (!input[0].equalsIgnoreCase("[coulomb]"))
 			return;
 		
@@ -28,10 +28,10 @@ public class SignFactory
 		if (!success)
 		{
 			Sign s = (Sign)b.getState();
-			s.setLine(0, "");
-			s.setLine(1, "");
-			s.setLine(2, "");
-			s.setLine(3, "");
+			s.setLine(0, "[Coulomb]");
+			s.setLine(1, "Failed");
+			s.setLine(2, "to make");
+			s.setLine(3, "query sign");
 			s.update();
 		}
 	}
@@ -96,7 +96,7 @@ public class SignFactory
 		if (queryable == null)
 			return false;
 		
-		SignUpdateTask task = new SignUpdateTask(plugin.getServer().getScheduler(), b, new Runnable()
+		SignUpdateTask task = new SignUpdateTask(plugin.getServer().getScheduler(), b, plugin.getSqliteDatabase(), new Runnable()
 		{
 			public void run()
 			{
@@ -123,7 +123,7 @@ public class SignFactory
 		
 		final Block[] adjacent = Utility.AdjacentBlocksNoDiagonals(b);
 		
-		SignUpdateTask task = new SignUpdateTask(plugin.getServer().getScheduler(), b, new Runnable()
+		SignUpdateTask task = new SignUpdateTask(plugin.getServer().getScheduler(), b, plugin.getSqliteDatabase(), new Runnable()
 		{
 			public void run()
 			{
@@ -164,7 +164,7 @@ public class SignFactory
 		
 		final Block[] adjacent = Utility.AdjacentBlocksNoDiagonals(b);
 		
-		SignUpdateTask task = new SignUpdateTask(plugin.getServer().getScheduler(), b, new Runnable()
+		SignUpdateTask task = new SignUpdateTask(plugin.getServer().getScheduler(), b, plugin.getSqliteDatabase(), new Runnable()
 		{
 			public void run()
 			{
