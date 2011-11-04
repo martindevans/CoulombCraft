@@ -9,7 +9,7 @@ import me.martindevans.CoulombCraft.CoulombCraft;
 import me.martindevans.CoulombCraft.Utility;
 
 public class SignFactory
-{	
+{		
 	public static void MakeSignFromStrings(String[] input, Block b, Player p, CoulombCraft plugin)
 	{
 		if (!input[0].equalsIgnoreCase("[coulomb]"))
@@ -42,13 +42,15 @@ public class SignFactory
 		
 		if (queryable == null)
 		{
-			p.sendMessage("[Coulomb]No queryable blocks nearby");
+			if (p != null)
+				p.sendMessage("[Coulomb]No queryable blocks nearby");
 			return null;
 		}
 		
 		if (!queryable.CanAnswer(variable))
 		{
-			p.sendMessage("[Coulomb]Blocks do not understand \"" + variable + "\"");
+			if (p != null)
+				p.sendMessage("[Coulomb]Blocks do not understand \"" + variable + "\"");
 			return null;
 		}
 		

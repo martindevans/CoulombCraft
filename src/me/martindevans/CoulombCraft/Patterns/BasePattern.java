@@ -41,6 +41,9 @@ public abstract class BasePattern implements IPatternInstanceFactory, IChunkList
 	
 	public int[][] rotateMatrixRight(int[][] matrix)
 	{
+		if (matrix.length == 0)
+			return matrix;
+		
 	    int w = matrix.length;
 	    int h = matrix[0].length;
 	    int[][] ret = new int[h][w];
@@ -150,5 +153,4 @@ public abstract class BasePattern implements IPatternInstanceFactory, IChunkList
 	}
 	
 	protected abstract void LoadStoredPatterns(Chunk c);
-
 }

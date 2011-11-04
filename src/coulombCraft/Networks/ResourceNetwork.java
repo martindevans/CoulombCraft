@@ -132,8 +132,13 @@ public class ResourceNetwork implements IDatabaseListener
 		
 		public void Add(double amount)
 		{
-			Amount += amount;
-			Amount = Math.max(0, Amount);
+			if (masterCopy != null)
+				masterCopy.Add(amount);
+			else
+			{
+				Amount += amount;
+				Amount = Math.max(0, Amount);
+			}
 		}
 		
 		public Resource getMasterResource()
@@ -180,7 +185,10 @@ public class ResourceNetwork implements IDatabaseListener
 		
 		public void WriteToDatabase()
 		{
-			manager.Database.getDbConnector().updateSafeQuery("UPDATE " + ResourceNetworkManager.NETWORK_RESOURCE_TABLE + " SET quantity = " + getAmount() + " WHERE networkId = " + Id + " AND name = '" + Name + "'");
+			if (masterCopy != null)
+				masterCopy.WriteToDatabase();
+			else
+				manager.Database.getDbConnector().updateSafeQuery("UPDATE " + ResourceNetworkManager.NETWORK_RESOURCE_TABLE + " SET quantity = " + getAmount() + " WHERE networkId = " + Id + " AND name = '" + Name + "'");
 		}
 		
 		public void Delete()
