@@ -21,7 +21,7 @@ public class MiningRig extends BasePatternInstance
 	{
 		super(plugin, blocks);
 		
-		homeHeadPosition = blocks[1][1].getLocation();
+		homeHeadPosition = blocks[0][0].getLocation().add(1, 0, 1);
 		
 		plugin.getServer().broadcastMessage("Created mining rig");
 	}
@@ -35,6 +35,7 @@ public class MiningRig extends BasePatternInstance
 	@Override
 	protected void OnPatternDestroyed()
 	{
+		getBlockInFrameCoordinates(x, y, z).setType(Material.AIR);
 	}
 
 	private int getNextMoveCount()
@@ -44,6 +45,8 @@ public class MiningRig extends BasePatternInstance
 	
 	public void Tick()
 	{
+		super.Tick();
+		
 		nextMove--;
 		
 		if (nextMove <= 0)

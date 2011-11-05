@@ -2,6 +2,8 @@ package me.martindevans.CoulombCraft.Patterns;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import me.martindevans.CoulombCraft.CoulombCraft;
 
@@ -48,6 +50,8 @@ public class SignPattern extends BasePattern
 		if (rs == null)
 			return;
 		
+		List<Block> blocks = new ArrayList<Block>();
+		
 		try
 		{
 			while (rs.next())
@@ -77,13 +81,19 @@ public class SignPattern extends BasePattern
 				s.setLine(2, strings[2]);
 				s.setLine(3, strings[3]);
 				
-				SignFactory.MakeSignFromStrings(strings, b, null, plugin);
+				blocks.add(b);
 			}
 		}
 		catch (SQLException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		
+		for (Block b : blocks)
+		{
+			Sign s = (Sign)b.getState();
+			SignFactory.MakeSignFromStrings(new String[] { s.getLine(0), s.getLine(1), s.getLine(2), s.getLine(3) }, b, null, plugin);
 		}
 	}
 

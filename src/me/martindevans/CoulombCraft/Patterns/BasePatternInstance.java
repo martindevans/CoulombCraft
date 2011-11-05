@@ -74,7 +74,7 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 	
 	@Override
 	public void Tick()
-	{		
+	{
 		if (!patternIntact && !patternUnloaded)
 		{
 			UnloadPattern();
@@ -116,10 +116,7 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 	
 	protected void DestroyPattern()
 	{
-		if (patternIntact)
-		{
-			patternIntact = false;
-		}
+		patternIntact = false;
 	}
 	
 	protected abstract void OnPatternDestroyed();
@@ -127,7 +124,7 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 	@Override
 	public boolean IsBreakable(Block b)
 	{
-		return patternIntact;
+		return true;
 	}
 
 	@Override

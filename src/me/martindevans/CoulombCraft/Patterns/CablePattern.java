@@ -49,12 +49,23 @@ public class CablePattern extends BasePattern
 		{
 			while (rs.next())
 			{
-				World w = plugin.getServer().getWorld(rs.getString("world"));
+				final World w = plugin.getServer().getWorld(rs.getString("world"));
 				
 				if (w == null)
 					continue;
 				
-				plugin.getPatternMatcher().Match(w.getBlockAt(rs.getInt("x"), rs.getInt("y"), rs.getInt("z")));
+				final int x = rs.getInt("x");
+				final int y = rs.getInt("y");
+				final int z = rs.getInt("z");
+				
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						plugin.getPatternMatcher().Match(w.getBlockAt(x, y, z));
+					}
+				});
 			}
 		}
 		catch (SQLException e)
