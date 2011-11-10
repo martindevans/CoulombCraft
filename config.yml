@@ -75,11 +75,10 @@ Power:
 
 Mining Rig:
 	#The number of ticks between mining head movements
-	Move Ticks: 1
-
-Mining Rig:
-	#The number of ticks between mining head movements
-	Move Ticks: 1
+	Move Ticks: 4
+	
+	#The power drawn by 1 move action
+	Power Draw: 250
 
 Core:
 	#Ticks between sign updates

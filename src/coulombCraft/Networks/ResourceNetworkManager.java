@@ -3,6 +3,12 @@ package coulombCraft.Networks;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 
 import me.martindevans.CoulombCraft.CoulombCraft;
 import me.martindevans.CoulombCraft.Database;
@@ -29,6 +35,11 @@ public class ResourceNetworkManager
 		this.Database = plugin.getSqliteDatabase();
 	}
 	
+	public ResourceNetwork getNetworkByBlock(Block b)
+	{
+		return getNetworkByBlock(b.getX(), b.getY(), b.getZ(), b.getWorld().getName());
+	}
+	
 	public ResourceNetwork getNetworkByBlock(int x, int y, int z, String world)
 	{
 		ResultSet rs = Database.getDbConnector().sqlSafeQuery("SELECT networkId FROM " + NETWORK_BLOCK_TABLE + " WHERE x = " + x + " AND y = " + y + " AND z = " + z + " AND world = '" + world + "'");
@@ -47,6 +58,32 @@ public class ResourceNetworkManager
 			CoulombCraft.getLogger().info(e.toString());
 			return null;
 		}
+	}
+	
+	public Block[] getAdjacentNetworkBlocks(Location location)
+	{
+		ResultSet rs = SelectAdjacentNetworks(location.getBlockX(), location.getBlockY(), location.getBlockZ(), location.getWorld().getName());
+		
+		Set<Block> blocks = new HashSet<Block>();
+		
+		try
+		{
+			while (rs.next())
+			{
+				World w = plugin.getServer().getWorld(rs.getString("world"));
+				int x = rs.getInt("x");
+				int y = rs.getInt("y");
+				int z = rs.getInt("z");
+				
+				blocks.add(w.getBlockAt(x, y, z));
+			}
+		}
+		catch (SQLException e)
+		{
+			CoulombCraft.getLogger().info(e.toString());
+		}
+		
+		return blocks.toArray(new Block[blocks.size()]);
 	}
 	
 	public ResourceNetwork getNetworkById(long networkId)
@@ -98,7 +135,7 @@ public class ResourceNetworkManager
 
 	private ResultSet SelectAdjacentNetworks(int x, int y, int z, String world)
 	{
-		return Database.getDbConnector().sqlSafeQuery("SELECT DISTINCT networkId FROM " + NETWORK_BLOCK_TABLE + " WHERE " +
+		return Database.getDbConnector().sqlSafeQuery("SELECT DISTINCT * FROM " + NETWORK_BLOCK_TABLE + " WHERE " +
 				"x <= " + (x + 1) + " AND x >= " + (x - 1) + " AND " +
 				"y <= " + (y + 1) + " AND y >= " + (y - 1) + " AND " +
 				"z <= " + (z + 1) + " AND z >= " + (z - 1) + " AND " + 

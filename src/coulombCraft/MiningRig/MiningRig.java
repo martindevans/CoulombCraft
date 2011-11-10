@@ -3,8 +3,9 @@ package coulombCraft.MiningRig;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-
+import coulombCraft.Networks.ResourceNetwork;
 import me.martindevans.CoulombCraft.CoulombCraft;
+import me.martindevans.CoulombCraft.MaterialDropMap;
 import me.martindevans.CoulombCraft.Patterns.BasePatternInstance;
 
 public class MiningRig extends BasePatternInstance
@@ -17,6 +18,9 @@ public class MiningRig extends BasePatternInstance
 	int y = 0;
 	Location homeHeadPosition;
 	
+	Block networkBlock;
+	ResourceNetwork.Resource power;
+	
 	public MiningRig(CoulombCraft plugin, Block[][] blocks)
 	{
 		super(plugin, blocks);
@@ -28,7 +32,7 @@ public class MiningRig extends BasePatternInstance
 
 	@Override
 	public String toString()
-	{
+	{		
 		return "Automated Mining Rig";
 	}
 	
@@ -40,7 +44,7 @@ public class MiningRig extends BasePatternInstance
 
 	private int getNextMoveCount()
 	{
-		return plugin.getConfiguration().getInt("Mining Rig.Move Ticks", 1);
+		return plugin.getConfiguration().getInt("Mining Rig.Move Ticks", 4);
 	}
 	
 	public void Tick()
@@ -61,10 +65,47 @@ public class MiningRig extends BasePatternInstance
 		return homeHeadPosition.getBlock().getRelative(x, y, z);
 	}
 	
+	private void FindNetwork()
+	{
+		for (int i = 0; i < blocks.length; i++)
+		{
+			for (int j = 0; j < blocks[i].length; j++)
+			{
+				if (blocks[i][j] == null)
+					continue;
+				
+				Block[] netBlocks = plugin.getResourceNetworkManager().getAdjacentNetworkBlocks(blocks[i][j].getLocation());
+				if (netBlocks.length == 0)
+					continue;
+				
+				ResourceNetwork network = plugin.getResourceNetworkManager().getNetworkByBlock(netBlocks[0]);
+				
+				networkBlock = netBlocks[0];
+				power = network.GetResource("power");
+			}
+		}
+	}
+	
 	private void Move()
 	{
 		if (stop)
+		{
+			DestroyPattern();
 			return;
+		}
+		
+		if (power == null)
+		{
+			FindNetwork();
+			return;
+		}
+		
+		double powerDrain = plugin.getConfiguration().getDouble("Mining Rig.Power Draw", 250);
+		
+		if (power.getAmount() < powerDrain)
+			return;
+		
+		power.Add(-powerDrain);
 		
 		Block headA = getBlockInFrameCoordinates(x, y, z);
 		
@@ -85,6 +126,10 @@ public class MiningRig extends BasePatternInstance
 		
 		if (headB.getY() < 5)
 			stop = true;
+		
+		Material drop = MaterialDropMap.Map.get(headB.getType());
+		if (drop != null)
+			power.getNetwork().GetResource(drop.name()).Add(1);
 		
 		headA.setType(Material.AIR);
 		headB.setType(Material.DIAMOND_BLOCK);

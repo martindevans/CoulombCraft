@@ -2,8 +2,10 @@ package coulombCraft.Reactor;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -12,8 +14,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.config.Configuration;
 
-import coulombCraft.Networks.Cable;
-import coulombCraft.Signs.IQueryable;
+import coulombCraft.Networks.ResourceNetwork;
 import me.martindevans.CoulombCraft.CoulombCraft;
 import me.martindevans.CoulombCraft.Patterns.BasePatternInstance;
 
@@ -23,7 +24,6 @@ public class FuelRod extends BasePatternInstance
 	
 	double heatDelta;
 	double heatProduction;
-	int generatorCount = 0;
 	
 	Configuration config;
 	Random rand = new Random();
@@ -109,16 +109,19 @@ public class FuelRod extends BasePatternInstance
 	{
 		heatProduction = getHeatProduction();
 		
-		List<Cable> cable = UpdateNearbyBlocks();
+		Set<ResourceNetwork> networks = UpdateNearbyBlocks();
 		
 		heatProduction += heatDelta;
 		data.setHeat((float)Math.max(0, data.getHeat() + heatProduction));
 		
-		float cableHeat = data.getHeat() / ((float)cable.size());
-		for (Cable c : cable)
-			if (c != null)
-				c.AddHeat(cableHeat);
-		generatorCount = cable.size();
+		float cableHeat = data.getHeat() / ((float)networks.size());
+		
+		double powerGeneration = Math.pow(cableHeat * plugin.getConfiguration().getDouble("Power.Heat Multiplier", 0.03), plugin.getConfiguration().getDouble("Power.Heat Exponent", 1.5))
+				* plugin.getConfiguration().getDouble("Power.Generation Efficiency", 0.5);
+		
+		for (ResourceNetwork n : networks)
+			if (n != null)
+				n.GetResource("power").Add(powerGeneration);
 		
 		heatDelta = 0;
 		
@@ -144,9 +147,9 @@ public class FuelRod extends BasePatternInstance
 		super.Tick();
 	}
 
-	private List<Cable> UpdateNearbyBlocks()
+	private Set<ResourceNetwork> UpdateNearbyBlocks()
 	{
-		List<Cable> cableInRange = new ArrayList<Cable>();
+		Set<ResourceNetwork> cablesInRange = new HashSet<ResourceNetwork>();
 		
 		World world = coreLocation.getWorld();
 		for (int i = 0; i < blocksInRange.length; i++)
@@ -164,12 +167,7 @@ public class FuelRod extends BasePatternInstance
 				case 35:	//wool
 				{					
 					IgniteWool(world, b);
-					
-					IQueryable q = plugin.getQueryProvider().GetQueryable(b.getLocation());
-					if (q instanceof Cable)
-						cableInRange.add((Cable)q);
-					else
-						CoulombCraft.getLogger().info("Found wool, not Cable");
+					cablesInRange.add(plugin.getResourceNetworkManager().getNetworkByBlock(b));
 					continue;
 				}
 				case 20:	//Glass
@@ -228,7 +226,7 @@ public class FuelRod extends BasePatternInstance
 			}
 		}
 		
-		return cableInRange;
+		return cablesInRange;
 	}
 	
 	private void IgniteWood(World w, Block b)
@@ -312,8 +310,6 @@ public class FuelRod extends BasePatternInstance
 			return sigfig4.format(heatProduction);
 		else if (variable.equalsIgnoreCase("heat capacity"))
 			return sigfig2.format(getHeatCapacity());
-		else if (variable.equalsIgnoreCase("generators"))
-			return "" + generatorCount;
 		return null;
 	}
 	

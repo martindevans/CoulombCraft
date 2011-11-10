@@ -58,12 +58,18 @@ public class ResourceNetwork implements IDatabaseListener
 	
 	public Resource GetResource(String name)
 	{
+		name = name.toLowerCase();
+		if (name.length() > 11)
+			name = name.substring(0, 11);
+		
 		Resource r = resources.get(name);
 		
 		if (r == null)
 		{
-			r = new Resource(name);
+			r = new Resource(this, name);
 			resources.put(name, r);
+			
+			r.UpdateFromDatabase();
 		}
 		
 		return r;
@@ -84,13 +90,7 @@ public class ResourceNetwork implements IDatabaseListener
 			while (rs.next())
 			{
 				String name = rs.getString("name");
-				Resource r = resources.get(name);
-				
-				if (r == null)
-				{
-					r = new Resource(name);
-					resources.put(name, r);
-				}
+				Resource r = GetResource(name);
 				
 				r.Amount = rs.getDouble("quantity");
 			}
@@ -149,8 +149,15 @@ public class ResourceNetwork implements IDatabaseListener
 			return this;
 		}
 		
-		public Resource(String name)
+		private ResourceNetwork parent;
+		public ResourceNetwork getNetwork()
 		{
+			return parent;
+		}
+		
+		public Resource(ResourceNetwork parent, String name)
+		{
+			this.parent = parent;
 			Name = name;
 			UpdateFromDatabase();
 		}
