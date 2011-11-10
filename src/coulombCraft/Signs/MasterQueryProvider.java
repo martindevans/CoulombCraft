@@ -1,16 +1,20 @@
 package coulombCraft.Signs;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Location;
 
 import me.martindevans.CoulombCraft.CoulombCraft;
 
-public class QueryProvider
+public class MasterQueryProvider implements IQueryProvider
 {
 	HashMap<Location, IQueryable> queryables = new HashMap<Location, IQueryable>();
 	
-	public QueryProvider(CoulombCraft plugin)
+	List<IQueryProvider> providers = new ArrayList<IQueryProvider>();
+	
+	public MasterQueryProvider(CoulombCraft plugin)
 	{
 	}
 	
@@ -40,12 +44,32 @@ public class QueryProvider
 		if (queryable != null && queryable.CanAnswer(query))
 			return queryable;
 		
+		for (IQueryProvider q : providers)
+		{
+			IQueryable answer = q.GetAnyAdjacentQueryable(location, query);
+			if (answer != null)
+				return answer;
+		}
+		
 		return null;
 	}
 	
-	public IQueryable GetQueryable(Location location)
+	public List<IQueryable> GetQueryables(Location location)
 	{
-		return queryables.get(location);
+		List<IQueryable> answer = new ArrayList<IQueryable>();
+		
+		IQueryable queryable = queryables.get(location);
+		if (queryable != null)
+			answer.add(queryable);
+		
+		for (IQueryProvider q : providers)
+		{
+			List<IQueryable> queryables = q.GetQueryables(location);
+			if (queryables != null)
+				answer.addAll(queryables);
+		}
+		
+		return answer;
 	}
 	
 	public void RegisterQueryable(Location position, IQueryable queryable)
@@ -56,5 +80,10 @@ public class QueryProvider
 	public void UnregisterQueryable(Location position)
 	{
 		queryables.remove(position);
+	}
+	
+	public void RegisterQueryProvider(IQueryProvider provider)
+	{
+		providers.add(provider);
 	}
 }

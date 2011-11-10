@@ -13,7 +13,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import coulombCraft.Signs.IQueryable;
-import coulombCraft.Signs.QueryProvider;
+import coulombCraft.Signs.MasterQueryProvider;
 
 /**
  * A 2Darrangement of blocks which forms a pattern
@@ -45,7 +45,7 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 		this.plugin = plugin;
 		
 		PositionalBlockBreakListener breakListener = plugin.getPositionalBreakListener();
-		QueryProvider queryProvider = plugin.getQueryProvider();
+		MasterQueryProvider queryProvider = plugin.getQueryProvider();
 		
 		for (int i = 0; i < blocks.length; i++)
 		{
@@ -89,7 +89,7 @@ public abstract class BasePatternInstance implements IBreakListener, ITick, IQue
 		plugin.getChunkWatcher().Remove(this);
 		
 		PositionalBlockBreakListener breakListener = plugin.getPositionalBreakListener();
-		QueryProvider queryProvider = plugin.getQueryProvider();
+		MasterQueryProvider queryProvider = plugin.getQueryProvider();
 		
 		for (int i = 0; i < blocks.length; i++)
 		{

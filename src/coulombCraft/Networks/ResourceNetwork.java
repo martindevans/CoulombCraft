@@ -2,13 +2,16 @@ package coulombCraft.Networks;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
+
+import coulombCraft.Signs.IQueryable;
 
 import me.martindevans.CoulombCraft.CoulombCraft;
 import me.martindevans.CoulombCraft.IDatabaseListener;
 
-public class ResourceNetwork implements IDatabaseListener
+public class ResourceNetwork implements IDatabaseListener, IQueryable
 {
 	public final long Id;
 	public final ResourceNetworkManager manager;
@@ -26,11 +29,6 @@ public class ResourceNetwork implements IDatabaseListener
 	public void AddBlock(int x, int y, int z, String world)
 	{
 		manager.AddNetworkBlock(x, y, z, world, Id);
-	}
-	
-	public void RemoveBlock(int x, int y, int z, String world)
-	{
-		manager.RemoveNetworkBlock(x, y, z, world, Id);
 	}
 	
 	ResourceNetwork MergeInto(ResourceNetwork network)
@@ -106,6 +104,23 @@ public class ResourceNetwork implements IDatabaseListener
 	{
 		for (Resource r : resources.values())
 			r.WriteToDatabase();
+	}
+	
+	DecimalFormat sigfig2 = new DecimalFormat("0.0");
+	
+	@Override
+	public String Query(String variable)
+	{
+		if (variable.startsWith("res:"))
+			return sigfig2.format(GetResource(variable.substring(4)).getAmount());
+		
+		return null;
+	}
+
+	@Override
+	public boolean CanAnswer(String variable)
+	{
+		return variable.startsWith("res:");
 	}
 	
 	public class Resource
@@ -208,4 +223,5 @@ public class ResourceNetwork implements IDatabaseListener
 			masterCopy = master;
 		}
 	}
+
 }

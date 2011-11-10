@@ -2,18 +2,23 @@ package coulombCraft.Networks;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
+import coulombCraft.Signs.IQueryProvider;
+import coulombCraft.Signs.IQueryable;
+
 import me.martindevans.CoulombCraft.CoulombCraft;
 import me.martindevans.CoulombCraft.Database;
 
-public class ResourceNetworkManager
+public class ResourceNetworkManager implements IQueryProvider
 {
 	CoulombCraft plugin;
 	public final Database Database;
@@ -33,6 +38,8 @@ public class ResourceNetworkManager
 	{
 		this.plugin = plugin;
 		this.Database = plugin.getSqliteDatabase();
+		
+		plugin.getQueryProvider().RegisterQueryProvider(this);
 	}
 	
 	public ResourceNetwork getNetworkByBlock(Block b)
@@ -58,6 +65,11 @@ public class ResourceNetworkManager
 			CoulombCraft.getLogger().info(e.toString());
 			return null;
 		}
+	}
+	
+	public ResourceNetwork getNetworkByBlock(Location location)
+	{
+		return getNetworkByBlock(location.getBlock());
 	}
 	
 	public Block[] getAdjacentNetworkBlocks(Location location)
@@ -167,8 +179,36 @@ public class ResourceNetworkManager
 		Database.getDbConnector().insertSafeQuery("INSERT INTO " + NETWORK_BLOCK_TABLE + " VALUES ( " + x + "," + y + "," + z + ",'" + world + "'," + id + ")");
 	}
 
-	public void RemoveNetworkBlock(int x, int y, int z, String world, long id)
+	@Override
+	public IQueryable GetAnyAdjacentQueryable(Location location, String query)
 	{
-		Database.getDbConnector().deleteSafeQuery("DELETE FROM " + NETWORK_BLOCK_TABLE + " WHERE x = " + x + " AND y = " + y + " AND z = " + z + " AND networkId = " + id + " AND world = '" + world + "'");
+		Block[] blocks = getAdjacentNetworkBlocks(location);
+		
+		if (blocks.length == 0)
+			return null;
+		
+		ResourceNetwork network = getNetworkByBlock(blocks[0]);
+		
+		if (network == null)
+			return null;
+		
+		if (network.CanAnswer(query))
+			return network;
+		
+		return null;
+	}
+
+	@Override
+	public List<IQueryable> GetQueryables(Location location)
+	{
+		ResourceNetwork net = getNetworkByBlock(location);
+		
+		if (net == null)
+			return null;
+		
+		List<IQueryable> answer = new ArrayList<IQueryable>();
+		answer.add(net);
+		
+		return answer;
 	}
 }

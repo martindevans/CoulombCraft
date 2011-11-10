@@ -6,8 +6,6 @@ import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 
-import coulombCraft.Networks.Superconductor;
-
 public class SuperconductorPattern extends BasePattern
 {
 	CoulombCraft plugin;
@@ -22,12 +20,14 @@ public class SuperconductorPattern extends BasePattern
 	@Override
 	public BasePatternInstance Create(Block[][] blocks)
 	{
-		return new Superconductor(plugin, blocks);
+		//This will either create a new network, or merge this new block into an existing network
+		plugin.getResourceNetworkManager().CreateNetwork(blocks[0][0].getX(), blocks[0][0].getY(), blocks[0][0].getZ(), blocks[0][0].getWorld().getName());
+		
+		return null;
 	}
 
 	@Override
 	protected void LoadStoredPatterns(Chunk c)
 	{
-		//Pattern will be picked up by the cable loading of stored patterns
 	}
 }

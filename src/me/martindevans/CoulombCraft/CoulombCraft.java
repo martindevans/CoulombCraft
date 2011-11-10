@@ -23,7 +23,7 @@ import org.bukkit.util.config.Configuration;
 import coulombCraft.Freezer.FreezerPattern;
 import coulombCraft.Reactor.FuelRodData;
 import coulombCraft.Recipes.StoneToWool;
-import coulombCraft.Signs.QueryProvider;
+import coulombCraft.Signs.MasterQueryProvider;
 import coulombCraft.Signs.SignUpdateTask;
 import coulombCraft.Networks.ResourceNetworkManager;
 
@@ -35,7 +35,7 @@ public class CoulombCraft extends JavaPlugin
 	private PatternMatcher patterns;
 	private Configuration config;
 	private PositionalBlockBreakListener positionalBreakListener;
-	private QueryProvider queryProvider;
+	private MasterQueryProvider queryProvider;
 	private Database database;
 	private ResourceNetworkManager resourceNetworkManager;
 	private ChunkLoadListener chunkUnloadListener;
@@ -65,7 +65,7 @@ public class CoulombCraft extends JavaPlugin
 		return config;
 	}
 	
-	public QueryProvider getQueryProvider()
+	public MasterQueryProvider getQueryProvider()
 	{
 		return queryProvider;
 	}
@@ -91,8 +91,8 @@ public class CoulombCraft extends JavaPlugin
 		 LoadDatabase();
 	
 		 patterns = new PatternMatcher();
+		 queryProvider = new MasterQueryProvider(this);
 		 resourceNetworkManager = new ResourceNetworkManager(this);
-		 queryProvider = new QueryProvider(this);
 		 positionalBreakListener = new PositionalBlockBreakListener();
 		 chunkUnloadListener = new ChunkLoadListener();
 		 
