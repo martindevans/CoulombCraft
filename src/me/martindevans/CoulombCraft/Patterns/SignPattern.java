@@ -63,9 +63,9 @@ public class SignPattern extends BasePattern
 				
 				Block b = c.getWorld().getBlockAt(rs.getInt("xPos"), rs.getInt("yPos"), rs.getInt("zPos"));
 				
-				if (!b.getType().equals(Material.SIGN) && !b.getType().equals(Material.SIGN_POST))
+				if (!b.getType().equals(Material.SIGN) && !b.getType().equals(Material.SIGN_POST) && !b.getType().equals(Material.WALL_SIGN))
 				{
-					CoulombCraft.getLogger().info("Cannot load sign, it is no longer a sign");
+					CoulombCraft.getLogger().info("Cannot load sign, it is no longer a sign, it is " + b.getType().toString());
 					
 					plugin.getSqliteDatabase().getDbConnector().deleteSafeQuery("DELETE FROM " + SignUpdateTask.TABLE_NAME + " WHERE xPos = " + b.getX() + " AND yPos = " + b.getY() + " AND zPos = " + b.getZ() + " AND world = '" + b.getWorld().getName() + "'");
 					
@@ -88,6 +88,17 @@ public class SignPattern extends BasePattern
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
 		}
 		
 		for (Block b : blocks)

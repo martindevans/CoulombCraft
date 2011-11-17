@@ -112,18 +112,17 @@ public class FuelRod extends BasePatternInstance
 		Set<ResourceNetwork> networks = UpdateNearbyBlocks();
 		
 		heatProduction += heatDelta;
+		heatDelta = 0;
+		
 		data.setHeat((float)Math.max(0, data.getHeat() + heatProduction));
 		
 		float cableHeat = data.getHeat() / ((float)networks.size());
-		
 		double powerGeneration = Math.pow(cableHeat * plugin.getConfiguration().getDouble("Power.Heat Multiplier", 0.03), plugin.getConfiguration().getDouble("Power.Heat Exponent", 1.5))
 				* plugin.getConfiguration().getDouble("Power.Generation Efficiency", 0.5);
-		
-		for (ResourceNetwork n : networks)
-			if (n != null)
-				n.GetResource("power").Add(powerGeneration);
-		
-		heatDelta = 0;
+		if (networks != null)
+			for (ResourceNetwork n : networks)
+				if (n != null)
+					n.GetResource("power").Add(powerGeneration);
 		
 		if (blocks[1][1].getType() != Material.LAVA)
 		{
@@ -162,11 +161,8 @@ public class FuelRod extends BasePatternInstance
 			
 			switch (type)
 			{
-				case 0:		//air
-					continue;
-				case 35:	//wool
-				{					
-					IgniteWool(world, b);
+				case 22:	//Lapis generator
+				{
 					cablesInRange.add(plugin.getResourceNetworkManager().getNetworkByBlock(b));
 					continue;
 				}
@@ -185,12 +181,6 @@ public class FuelRod extends BasePatternInstance
 					continue;
 				}
 				case 8:		//water (flowing)
-				{
-					if (b.getY() != coreLocation.getBlockY())
-						continue;
-					ApplyWaterCooling(world, b);
-					continue;
-				}
 				case 9:		//water (still)
 				{
 					ApplyWaterCooling(world, b);
@@ -243,10 +233,12 @@ public class FuelRod extends BasePatternInstance
 		double randNumber = rand.nextDouble();
 		if (randNumber < chance)
 		{
-			heatDelta -= config.getDouble("Fuel Rod.Water Heat Reduction", 1.2);
+			heatDelta -= config.getDouble("Fuel Rod.Water Heat Reduction", 3);
 			
 			if (data.getHeat() > config.getDouble("Heat.Water Evaporation Threshold", 100))
-				b.setTypeId(0);
+			{
+				b.setType(Material.AIR);
+			}
 			
 			w.playEffect(b.getLocation(), Effect.EXTINGUISH, 0);
 		}
@@ -277,14 +269,6 @@ public class FuelRod extends BasePatternInstance
 						super.DestroyPattern();
 				}
 			}
-		}
-	}
-	
-	private void IgniteWool(World w, Block b)
-	{
-		if (data.getHeat() > config.getDouble("Heat.Cable Ignition Threshold", 900) && rand.nextDouble() <= config.getDouble("Heat.Cable Ignition Chance", 0.1))
-		{
-			CoulombCraft.Ignite(b);
 		}
 	}
 	

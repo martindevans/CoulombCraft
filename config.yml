@@ -3,13 +3,10 @@ Fuel Rod:
 	Base Heat Production: 1
 	
 	#The maximum heat capacity of a fuel rod before it melts down
-	Heat Capacity: 200
-	
-	#The heat before a meltdown destroys the fuel rod with lava
-	Meltdown Heat Capacity: 1000
+	Heat Capacity: 1000
 	
 	#The amount of heat removed by a block of water near to a core
-	Water Heat Reduction: 0.5
+	Water Heat Reduction: 3
 	
 	#Amount a nearby lava source increases reactor temperature production
 	Lava Source Bonus: 1.1
@@ -45,12 +42,6 @@ Heat:
 	#The temperature required to evaporate water
 	Water Evaporation Threshold: 100
 	
-	#Wool/cable ignition threshold
-	Cable Ignition Threshold: 900
-	
-	#Wool/cable ignition threshold
-	Cable Ignition Chance: 0.01
-	
 	#Temperature above which glass smashes
 	Glass Break Threshold: 850
 	
@@ -75,10 +66,10 @@ Power:
 
 Mining Rig:
 	#The number of ticks between mining head movements
-	Move Ticks: 4
+	Move Ticks: 1
 	
 	#The power drawn by 1 move action
-	Power Draw: 250
+	Power Draw: 100
 
 Core:
 	#Ticks between sign updates

@@ -44,7 +44,7 @@ public class MiningRig extends BasePatternInstance
 
 	private int getNextMoveCount()
 	{
-		return plugin.getConfiguration().getInt("Mining Rig.Move Ticks", 4);
+		return plugin.getConfiguration().getInt("Mining Rig.Move Ticks", 1);
 	}
 	
 	public void Tick()
@@ -100,7 +100,7 @@ public class MiningRig extends BasePatternInstance
 			return;
 		}
 		
-		double powerDrain = plugin.getConfiguration().getDouble("Mining Rig.Power Draw", 250);
+		double powerDrain = plugin.getConfiguration().getDouble("Mining Rig.Power Draw", 100);
 		
 		if (power.getAmount() < powerDrain)
 			return;

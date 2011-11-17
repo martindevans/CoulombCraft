@@ -97,6 +97,17 @@ public class ResourceNetwork implements IDatabaseListener, IQueryable
 		{
 			CoulombCraft.getLogger().info(e.toString());
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	@Override
@@ -202,6 +213,17 @@ public class ResourceNetwork implements IDatabaseListener, IQueryable
 					CoulombCraft.getLogger().info(e.toString());
 					Amount = (double)0;
 				}
+				finally
+				{
+					try
+					{
+						rs.close();
+					}
+					catch (SQLException e)
+					{
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 		
@@ -221,6 +243,7 @@ public class ResourceNetwork implements IDatabaseListener, IQueryable
 		void MakeMirror(Resource master)
 		{
 			masterCopy = master;
+			masterCopy.Add(Amount);
 		}
 	}
 

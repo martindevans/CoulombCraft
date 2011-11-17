@@ -65,6 +65,17 @@ public class ResourceNetworkManager implements IQueryProvider
 			CoulombCraft.getLogger().info(e.toString());
 			return null;
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public ResourceNetwork getNetworkByBlock(Location location)
@@ -93,6 +104,17 @@ public class ResourceNetworkManager implements IQueryProvider
 		catch (SQLException e)
 		{
 			CoulombCraft.getLogger().info(e.toString());
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
 		}
 		
 		return blocks.toArray(new Block[blocks.size()]);
@@ -127,6 +149,17 @@ public class ResourceNetworkManager implements IQueryProvider
 		catch (SQLException e)
 		{
 			CoulombCraft.getLogger().info(e.toString());
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
 		}
 		
 		try
@@ -169,6 +202,17 @@ public class ResourceNetworkManager implements IQueryProvider
 		catch (SQLException e)
 		{
 			CoulombCraft.getLogger().info(e.toString());
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
 		}
 		
 		return network;

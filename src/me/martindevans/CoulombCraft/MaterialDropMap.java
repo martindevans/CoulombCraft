@@ -24,6 +24,7 @@ public class MaterialDropMap
 			put(Material.DIAMOND_BLOCK, Material.DIAMOND_BLOCK);
 			put(Material.DIAMOND_ORE, Material.DIAMOND);
 			put(Material.DIRT, Material.DIRT);
+			put(Material.GLOWSTONE, Material.GLOWSTONE_DUST);
 			put(Material.GOLD_BLOCK, Material.GOLD_BLOCK);
 			put(Material.GOLD_ORE, Material.GOLD_ORE);
 			put(Material.IRON_BLOCK, Material.IRON_BLOCK);

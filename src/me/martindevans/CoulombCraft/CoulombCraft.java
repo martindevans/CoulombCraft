@@ -5,13 +5,13 @@ import java.util.logging.Logger;
 
 import me.martindevans.CoulombCraft.Listeners.*;
 import me.martindevans.CoulombCraft.Patterns.BasePattern;
-import me.martindevans.CoulombCraft.Patterns.CablePattern;
+import me.martindevans.CoulombCraft.Patterns.GeneratorPattern;
 import me.martindevans.CoulombCraft.Patterns.FuelRodPattern;
 import me.martindevans.CoulombCraft.Patterns.FuelRodPattern2;
 import me.martindevans.CoulombCraft.Patterns.MiningRigPattern;
 import me.martindevans.CoulombCraft.Patterns.PatternMatcher;
 import me.martindevans.CoulombCraft.Patterns.SignPattern;
-import me.martindevans.CoulombCraft.Patterns.SuperconductorPattern;
+import me.martindevans.CoulombCraft.Patterns.FeedlinePattern;
 
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -135,8 +135,8 @@ public class CoulombCraft extends JavaPlugin
 		AddPattern(new FuelRodPattern2(this));
 		AddPattern(new MiningRigPattern(this));
 		AddPattern(new FreezerPattern(this));
-		AddPattern(new CablePattern(this));
-		AddPattern(new SuperconductorPattern(this));
+		AddPattern(new GeneratorPattern(this));
+		AddPattern(new FeedlinePattern(this));
 		AddPattern(new SignPattern(this));
 	}
 	

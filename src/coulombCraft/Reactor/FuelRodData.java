@@ -76,22 +76,31 @@ public class FuelRodData implements IDatabaseListener
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
 		
 		return false;
 	}
 	
 	private void Insert()
 	{
-		CoulombCraft.getLogger().info("Fuel rod inserted");
-		
 		int i = database.getDbConnector().insertSafeQuery("INSERT INTO " + TABLE_NAME + " VALUES (" + heat + ", " + x + ", " + y + ", " + z + ", '" + world + "')");
-		CoulombCraft.getLogger().info("Inserting " + i + " rod(s) into database");
+		CoulombCraft.getLogger().info("Inserting " + i + " Fuel Rod(s) into database");
 	}
 	
 	public void Destroy()
 	{
 		int i = database.getDbConnector().deleteSafeQuery("DELETE FROM " + TABLE_NAME + " WHERE xPos = " + x + " AND yPos = " + y + " AND zPos = " + z + " AND world = '" + world + "'");
-		CoulombCraft.getLogger().info("Removing " + i + " rod(s) from database");
+		CoulombCraft.getLogger().info("Removing " + i + " Fuel Rod(s) from database");
 		
 		Unload();
 	}

@@ -67,5 +67,16 @@ public class FuelRodPattern extends BasePattern implements IPatternInstanceFacto
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 }
